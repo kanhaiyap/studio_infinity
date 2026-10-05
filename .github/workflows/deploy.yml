@@ -30,6 +30,8 @@ jobs:
         env:
           SITE_URL: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Publishes the Unsplash sample projects so the preview has photos. Remove once real projects are in.
+          SHOW_SAMPLES: 'true'
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

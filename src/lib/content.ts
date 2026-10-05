@@ -3,6 +3,9 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 export type Page = CollectionEntry<'pages'>;
 export type Project = CollectionEntry<'projects'>;
 
+// SHOW_SAMPLES=true publishes drafts (the sample projects) for previews; see content.config.ts.
+const showDrafts = import.meta.env.DEV || process.env.SHOW_SAMPLES === 'true';
+
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
 
 export async function getPages(kind?: Page['data']['kind']) {
@@ -12,7 +15,7 @@ export async function getPages(kind?: Page['data']['kind']) {
 
 export async function getProjects(filter: { category?: string; city?: string; featured?: boolean } = {}) {
   const projects = await getCollection('projects', ({ data }) => {
-    if (data.draft && import.meta.env.PROD) return false;
+    if (data.draft && !showDrafts) return false;
     if (filter.category && data.category !== filter.category) return false;
     if (filter.city && data.city.toLowerCase() !== filter.city.toLowerCase()) return false;
     if (filter.featured && !data.featured) return false;

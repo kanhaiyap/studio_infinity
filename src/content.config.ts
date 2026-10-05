@@ -25,10 +25,11 @@ const pages = defineCollection({
 
 // sample-*.md are preview-only (stock photos). Leaving them out of production builds keeps their
 // photos out of the published site too; `draft: true` alone would still copy the images.
-const isProduction = process.env.NODE_ENV === 'production';
+// SHOW_SAMPLES=true (set in the GitHub Pages workflow) keeps them in a production build for client previews.
+const hideSamples = process.env.NODE_ENV === 'production' && process.env.SHOW_SAMPLES !== 'true';
 
 const projects = defineCollection({
-  loader: glob({ pattern: isProduction ? ['*.md', '!sample-*.md'] : '*.md', base: './src/content/projects' }),
+  loader: glob({ pattern: hideSamples ? ['*.md', '!sample-*.md'] : '*.md', base: './src/content/projects' }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
