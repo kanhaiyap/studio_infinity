@@ -1,0 +1,81 @@
+---
+// Large, light statement heading. Each word rises into place: on page load (`animate="load"`)
+// or when scrolled into view (`animate="reveal"`). Works however the text wraps.
+interface Props {
+  text: string;
+  as?: 'h1' | 'h2' | 'p';
+  class?: string;
+  id?: string;
+  animate?: 'load' | 'reveal';
+}
+
+const { text, as: Tag = 'h1', class: className, id, animate = 'load' } = Astro.props;
+const words = text.split(' ');
+---
+
+<Tag
+  class:list={['headline', `headline--${animate}`, className]}
+  id={id}
+  data-reveal={animate === 'reveal' ? '' : undefined}
+>
+  {
+    words.map((word, i) => (
+      <>
+        <span class="headline__word">
+          <span style={`--w: ${i}`}>{word}</span>
+        </span>
+        {i < words.length - 1 && ' '}
+      </>
+    ))
+  }
+</Tag>
+
+<style>
+  .headline {
+    font-weight: 300;
+    letter-spacing: -0.025em;
+    line-height: 1.04;
+  }
+
+  /* Each word is a mask it rises through; padding keeps descenders unclipped. */
+  .headline__word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
+
+  .headline__word > span {
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .headline--load .headline__word > span {
+      animation: word-up 1200ms var(--ease) both;
+      animation-delay: calc(var(--headline-delay, 100ms) + var(--w) * 45ms);
+    }
+
+    /* Revealed on scroll: the heading itself stays put; only its words rise. */
+    :global(.js) .headline--reveal[data-reveal] {
+      opacity: 1;
+      transform: none;
+    }
+
+    :global(.js) .headline--reveal .headline__word > span {
+      transform: translateY(110%);
+      transition: transform 1200ms var(--ease);
+      transition-delay: calc(var(--w) * 45ms);
+    }
+
+    :global(.js) .headline--reveal:global(.is-visible) .headline__word > span {
+      transform: none;
+    }
+  }
+
+  @keyframes word-up {
+    from {
+      transform: translateY(110%);
+    }
+  }
+</style>

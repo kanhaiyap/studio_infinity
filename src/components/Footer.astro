@@ -1,0 +1,192 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo-light.png';
+import { site } from '../site';
+import { url } from '../lib/url';
+import { getPages } from '../lib/content';
+
+const services = await getPages('service');
+const cities = await getPages('city');
+
+const socials = [
+  { label: 'Instagram', href: site.social.instagram },
+  { label: 'LinkedIn', href: site.social.linkedin },
+  { label: 'Pinterest', href: site.social.pinterest },
+].filter((s) => s.href);
+
+const hasContact = site.email || site.phone || site.whatsapp;
+---
+
+<footer class="site-footer theme-dark">
+  <div class="container site-footer__grid">
+    <div class="site-footer__brand">
+      <a href={url('/')} aria-label={`${site.name} home`}>
+        <Image src={logo} alt="" width={176} height={22} densities={[1, 2]} />
+      </a>
+      <p>{site.description}</p>
+    </div>
+
+    <nav aria-label="Services">
+      <h2>Services</h2>
+      <ul>
+        {
+          services.map((page) => (
+            <li>
+              <a href={url(`/${page.id}/`)}>{page.data.title}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav aria-label="Locations">
+      <h2>Locations</h2>
+      <ul>
+        {
+          cities.map((page) => (
+            <li>
+              <a href={url(`/${page.id}/`)}>{page.data.title}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div>
+      <h2>Contact</h2>
+      <ul>
+        {
+          site.email && (
+            <li>
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </li>
+          )
+        }
+        {
+          site.phone && (
+            <li>
+              <a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a>
+            </li>
+          )
+        }
+        {
+          site.whatsapp && (
+            <li>
+              <a href={`https://wa.me/${site.whatsapp}`} rel="noopener" target="_blank">
+                WhatsApp
+              </a>
+            </li>
+          )
+        }
+        {
+          !hasContact && (
+            <li>
+              <a href={url('/contact/')}>Get in touch</a>
+            </li>
+          )
+        }
+        {
+          socials.map((s) => (
+            <li>
+              <a href={s.href} rel="noopener" target="_blank">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="container site-footer__base">
+    <p>© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-top: var(--space-6);
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9375rem;
+  }
+
+  .site-footer__grid {
+    display: grid;
+    gap: var(--space-5) var(--space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 40rem) {
+    .site-footer__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .site-footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .site-footer__grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+
+    .site-footer__brand {
+      grid-column: auto;
+    }
+  }
+
+  .site-footer__brand img {
+    width: 176px;
+    height: auto;
+    margin-bottom: var(--space-3);
+  }
+
+  .site-footer__brand p {
+    max-width: 24rem;
+    color: var(--color-text-muted);
+  }
+
+  .site-footer h2 {
+    margin-bottom: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .site-footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    text-decoration: none;
+  }
+
+  .site-footer li a {
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .site-footer li a:hover {
+    color: var(--color-accent);
+  }
+
+  .site-footer__base {
+    margin-top: var(--space-6);
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .site-footer__base p {
+    margin: 0;
+  }
+</style>

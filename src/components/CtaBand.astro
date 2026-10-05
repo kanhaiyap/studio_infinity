@@ -1,0 +1,39 @@
+---
+import Headline from './Headline.astro';
+import { url } from '../lib/url';
+---
+
+<section class="cta-band theme-dark" aria-labelledby="cta-heading">
+  <div class="container cta-band__inner">
+    <div>
+      <Headline as="h2" id="cta-heading" text="Do you have a project?" class="cta-band__heading" animate="reveal" />
+      <p class="lead" data-reveal style="--reveal-i: 2">Tell us about your site, your brief and your timeline, and we'll get back to you.</p>
+    </div>
+    <div data-reveal style="--reveal-i: 3">
+      <a class="button" href={url('/contact/')} data-magnetic>contact us</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    padding-block: clamp(5rem, 12vw, 9rem);
+  }
+
+  .cta-band__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .cta-band :global(.cta-band__heading) {
+    font-size: clamp(2.75rem, 7vw, 5.5rem);
+    line-height: 1.02;
+  }
+
+  .cta-band .lead {
+    margin: 0;
+  }
+</style>

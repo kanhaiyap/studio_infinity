@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Headline from '../components/Headline.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { getProjects } from '../lib/content';
+
+// Projects page text — edit here. Projects themselves live in src/content/projects/.
+const meta = {
+  title: 'Projects | Architecture & Interior Portfolio | Studio Infinity',
+  description:
+    'Explore residential, commercial and interior design projects by Studio Infinity across Mumbai, Delhi, Bangalore and Jaipur.',
+};
+const intro = "Explore the spaces we've designed and built.";
+
+const projects = await getProjects();
+---
+
+<Base title={meta.title} description={meta.description} breadcrumbs={[{ name: 'Projects', path: '/projects/' }]}>
+  <section class="section section--tight container page-intro">
+    <span class="eyebrow">Portfolio</span>
+    <Headline text="Projects" class="page-title" />
+    <p class="lead">{intro}</p>
+  </section>
+
+  <section class="section section--tight section--flush-top container" aria-label="Project list">
+    {projects.length > 0 ? <ProjectGrid projects={projects} filterable /> : <p class="lead">New projects are being added soon.</p>}
+  </section>
+
+  <CtaBand />
+</Base>

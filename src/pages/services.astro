@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Headline from '../components/Headline.astro';
+import LinkCards from '../components/LinkCards.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { getPages } from '../lib/content';
+
+// Services page text — edit here.
+const meta = {
+  title: 'Architecture & Interior Design Services | Studio Infinity',
+  description:
+    'Residential architecture, commercial architecture and interior design services from Studio Infinity in Mumbai, Delhi, Bangalore and Jaipur.',
+};
+const intro = 'From the first sketch to the finished space, we work across residential, commercial and interior projects.';
+
+const services = await getPages('service');
+---
+
+<Base title={meta.title} description={meta.description} breadcrumbs={[{ name: 'Services', path: '/services/' }]}>
+  <section class="section section--tight container page-intro">
+    <span class="eyebrow">What we do</span>
+    <Headline text="Services" class="page-title" />
+    <p class="lead">{intro}</p>
+  </section>
+
+  <section class="section section--tight section--flush-top container" aria-label="Our services">
+    <LinkCards items={services.map((p) => ({ title: p.data.title, href: `/${p.id}/`, summary: p.data.summary }))} />
+  </section>
+
+  <CtaBand />
+</Base>

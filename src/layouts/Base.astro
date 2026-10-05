@@ -1,0 +1,164 @@
+---
+// Static (not variable) Jost: its letter outlines don't overlap, so outlined headings render cleanly.
+import '@fontsource/jost/latin-300.css';
+import '@fontsource/jost/latin-400.css';
+import '@fontsource/jost/latin-500.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../site';
+import { absoluteUrl, url } from '../lib/url';
+
+export interface Crumb {
+  name: string;
+  path: string;
+}
+
+interface Props {
+  title: string; // full <title>, written for Google (~50-60 characters)
+  description: string; // ~140-160 characters
+  image?: string; // absolute path or URL of the social share image
+  breadcrumbs?: Crumb[];
+  schema?: Record<string, unknown>[];
+  overlayHeader?: boolean; // header floats transparent over a full-screen hero (home page)
+}
+
+const { title, description, image, breadcrumbs = [], schema = [], overlayHeader = false } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = image ? new URL(image, Astro.site).href : absoluteUrl('/og-default.png', Astro.site);
+const orgId = `${absoluteUrl('/', Astro.site)}#organization`;
+
+const hasAddress = Object.entries(site.address).some(([key, value]) => key !== 'country' && value);
+const sameAs = Object.values(site.social).filter(Boolean);
+
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  '@id': orgId,
+  name: site.name,
+  description: site.description,
+  url: absoluteUrl('/', Astro.site),
+  logo: absoluteUrl('/og-default.png', Astro.site),
+  image: absoluteUrl('/og-default.png', Astro.site),
+  ...(site.email && { email: site.email }),
+  ...(site.phone && { telephone: site.phone }),
+  ...(hasAddress && {
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: site.address.street,
+      addressLocality: site.address.city,
+      addressRegion: site.address.region,
+      postalCode: site.address.postalCode,
+      addressCountry: site.address.country,
+    },
+  }),
+  areaServed: ['Mumbai', 'Delhi', 'Bangalore', 'Jaipur'].map((name) => ({ '@type': 'City', name })),
+  ...(sameAs.length && { sameAs }),
+};
+
+const breadcrumbSchema = breadcrumbs.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [{ name: 'Home', path: '/' }, ...breadcrumbs].map((crumb, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: crumb.name,
+        item: absoluteUrl(crumb.path, Astro.site),
+      })),
+    }
+  : null;
+
+const jsonLd = [organization, breadcrumbSchema, ...schema].filter(Boolean);
+---
+
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={url('/sitemap-index.xml')} />
+    <meta name="theme-color" content="#ffffff" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header overlay={overlayHeader} />
+    <main id="main">
+      {
+        breadcrumbs.length > 0 && (
+          <nav class="breadcrumbs container" aria-label="Breadcrumb">
+            <ol>
+              <li>
+                <a href={url('/')}>Home</a>
+              </li>
+              {breadcrumbs.map((crumb, i) => (
+                <li>
+                  {i === breadcrumbs.length - 1 ? (
+                    <span aria-current="page">{crumb.name}</span>
+                  ) : (
+                    <a href={url(crumb.path)}>{crumb.name}</a>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/reveal';
+      import '../scripts/magnetic';
+      import '../scripts/parallax';
+    </script>
+  </body>
+</html>
+
+<style>
+  .breadcrumbs {
+    padding-top: var(--space-4);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li + li::before {
+    content: '/';
+    margin-right: 0.6rem;
+    color: var(--color-border-strong);
+  }
+
+  .breadcrumbs a {
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+</style>

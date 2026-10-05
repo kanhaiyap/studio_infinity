@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import Headline from '../components/Headline.astro';
+import { site } from '../site';
+
+// Contact page text — edit here. Contact details are set in src/site.ts.
+const meta = {
+  title: 'Contact Studio Infinity | Architects & Interior Designers',
+  description:
+    'Get in touch with Studio Infinity to discuss your residential, commercial or interior design project in Mumbai, Delhi, Bangalore or Jaipur.',
+};
+const intro = "Tell us about your project — the site, the brief and your timeline — and we'll get back to you.";
+
+const { street, city, region, postalCode } = site.address;
+const addressLines = [street, [city, region, postalCode].filter(Boolean).join(', ')].filter(Boolean);
+const hasDetails = site.email || site.phone || site.whatsapp || addressLines.length;
+---
+
+<Base
+  title={meta.title}
+  description={meta.description}
+  breadcrumbs={[{ name: 'Contact', path: '/contact/' }]}
+  schema={[{ '@context': 'https://schema.org', '@type': 'ContactPage', name: meta.title, description: meta.description }]}
+>
+  <section class="section section--tight container page-intro">
+    <span class="eyebrow">Contact</span>
+    <Headline text="Do you have a project?" class="page-title" />
+    <p class="lead">{intro}</p>
+  </section>
+
+  <section class="section section--tight section--flush-top container">
+    {
+      import.meta.env.DEV && !hasDetails && (
+        <p class="dev-note">Add the studio's email, phone, WhatsApp and address in src/site.ts. This note only appears while developing.</p>
+      )
+    }
+    <dl class="contact-list" data-reveal>
+      {
+        site.email && (
+          <div>
+            <dt>Email</dt>
+            <dd>
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </dd>
+          </div>
+        )
+      }
+      {
+        site.phone && (
+          <div>
+            <dt>Phone</dt>
+            <dd>
+              <a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a>
+            </dd>
+          </div>
+        )
+      }
+      {
+        site.whatsapp && (
+          <div>
+            <dt>WhatsApp</dt>
+            <dd>
+              <a href={`https://wa.me/${site.whatsapp}`} rel="noopener" target="_blank">
+                Message us on WhatsApp
+              </a>
+            </dd>
+          </div>
+        )
+      }
+      {
+        addressLines.length > 0 && (
+          <div>
+            <dt>Studio</dt>
+            <dd>
+              <address>
+                {addressLines.map((line) => (
+                  <>
+                    {line}
+                    <br />
+                  </>
+                ))}
+              </address>
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+  </section>
+</Base>
+
+<style>
+  .contact-list {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    margin: 0 0 var(--space-7);
+  }
+
+  .contact-list div {
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .contact-list dt {
+    margin-bottom: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .contact-list dd {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 300;
+  }
+
+  .contact-list address {
+    font-style: normal;
+  }
+
+  .dev-note {
+    padding: var(--space-2);
+    border: 1px dashed var(--color-border-strong);
+    color: var(--color-text-muted);
+  }
+</style>

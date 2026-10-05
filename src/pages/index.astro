@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import Headline from '../components/Headline.astro';
+import HeroSlider from '../components/HeroSlider.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import LinkCards from '../components/LinkCards.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { getPages, getProjects } from '../lib/content';
+import { url } from '../lib/url';
+
+// Home page text — edit here.
+const meta = {
+  title: 'Studio Infinity | Architects in Mumbai, Delhi, Bangalore & Jaipur',
+  description:
+    'Studio Infinity is an architecture and interior design studio creating residential, commercial and interior projects across Mumbai, Delhi, Bangalore and Jaipur.',
+};
+const heading = 'Architecture & interior design';
+const statement =
+  'Studio Infinity is an architecture and interior design practice working across Mumbai, Delhi, Bangalore and Jaipur — designing homes, workplaces and commercial spaces from the first sketch to the finished space.';
+
+const services = await getPages('service');
+const cities = await getPages('city');
+const featured = await getProjects({ featured: true });
+const slides = featured.filter((p) => p.data.cover).slice(0, 5);
+const selected = featured.slice(0, 4);
+const toItem = (p: (typeof services)[number]) => ({ title: p.data.title, href: `/${p.id}/`, summary: p.data.summary });
+---
+
+<Base title={meta.title} description={meta.description} overlayHeader={slides.length > 0}>
+  {
+    slides.length > 0 ? (
+      <HeroSlider projects={slides}>
+        <Headline slot="heading" text={heading} class="hero__heading" />
+      </HeroSlider>
+    ) : (
+      <section class="container hero-text">
+        <Headline text={heading} class="hero__heading" />
+      </section>
+    )
+  }
+
+  <section class="section" aria-label="About the studio">
+    <div class="container">
+      <p class="statement" data-reveal>
+        {statement} <a href={url('/about/')}>Learn about our practice.</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--flush-top" aria-labelledby="services-heading">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <h2 id="services-heading" class="section-label">Services</h2>
+        <a class="button button--ghost" href={url('/services/')}>all services</a>
+      </div>
+      <LinkCards items={services.map(toItem)} />
+    </div>
+  </section>
+
+  {
+    selected.length > 0 && (
+      <section class="section section--flush-top" aria-labelledby="projects-heading">
+        <div class="container">
+          <div class="section-head" data-reveal>
+            <h2 id="projects-heading" class="section-label">
+              Selected projects
+            </h2>
+            <a class="button button--ghost" href={url('/projects/')}>
+              all projects
+            </a>
+          </div>
+          <ProjectGrid projects={selected} />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section section--flush-top" aria-labelledby="locations-heading">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <h2 id="locations-heading" class="section-label">Locations</h2>
+      </div>
+      <LinkCards items={cities.map(toItem)} />
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  :global(.hero__heading) {
+    max-width: 12em;
+    margin: 0;
+    font-size: clamp(3rem, 7.5vw, 7rem);
+  }
+
+  /* Heading over the photo: white. */
+  :global(.hero-slider .hero__heading) {
+    color: #fff;
+  }
+
+  /* Text-only hero, used until projects with photos exist. */
+  .hero-text {
+    display: flex;
+    align-items: flex-end;
+    min-height: calc(80svh - var(--header-h));
+    padding-block: var(--space-6);
+  }
+</style>

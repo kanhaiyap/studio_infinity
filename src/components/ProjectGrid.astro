@@ -1,0 +1,209 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import type { Project } from '../lib/content';
+import { projectCategories } from '../site';
+
+interface Props {
+  projects: Project[];
+  filterable?: boolean;
+}
+
+const { projects, filterable = false } = Astro.props;
+const present = Object.entries(projectCategories).filter(([key]) => projects.some((p) => p.data.category === key));
+---
+
+{
+  filterable && present.length > 1 && (
+    <div class="project-filter" role="group" aria-label="Filter projects by category" hidden>
+      <button type="button" aria-pressed="true" data-filter="all">
+        All
+      </button>
+      {present.map(([key, label]) => (
+        <button type="button" aria-pressed="false" data-filter={key}>
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+<div class="project-grid">
+  {projects.map((project, i) => <ProjectCard project={project} index={i} eager={i < 2} />)}
+</div>
+
+{filterable && <p class="visually-hidden" aria-live="polite" data-filter-status />}
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  // ---------- Lightbox ----------
+  const zoomLinks = document.querySelectorAll<HTMLAnchorElement>('[data-gallery]');
+  if (zoomLinks.length) {
+    const lightbox = new PhotoSwipeLightbox({
+      pswpModule: () => import('photoswipe'),
+      bgOpacity: 0.96,
+      showHideAnimationType: 'fade',
+      padding: { top: 48, bottom: 48, left: 16, right: 16 },
+    });
+    lightbox.init();
+
+    zoomLinks.forEach((link) =>
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        lightbox.loadAndOpen(0, JSON.parse(link.dataset.gallery!));
+      }),
+    );
+  }
+
+  // ---------- Category filter ----------
+  const group = document.querySelector<HTMLElement>('.project-filter');
+
+  if (group) {
+    const buttons = [...group.querySelectorAll<HTMLButtonElement>('button')];
+    const cards = [...document.querySelectorAll<HTMLElement>('.project-grid [data-category]')];
+    const status = document.querySelector<HTMLElement>('[data-filter-status]');
+    const valid = new Set(buttons.map((b) => b.dataset.filter));
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+    const update = (filter: string) => {
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
+      let shown = 0;
+      cards.forEach((card) => {
+        const match = filter === 'all' || card.dataset.category === filter;
+        card.hidden = !match;
+        if (match) {
+          card.classList.add('is-visible'); // skip the scroll-reveal fade for cards brought back by the filter
+          shown++;
+        }
+      });
+      // Re-flow the editorial layout over the cards that are still shown.
+      cards.filter((c) => !c.hidden).forEach((c, i) => (c.dataset.slot = String((i % 4) + 1)));
+      if (status) status.textContent = `Showing ${shown} project${shown === 1 ? '' : 's'}`;
+    };
+
+    // Animate cards moving into their new positions where the browser supports it.
+    const apply = (filter: string) => {
+      if (!document.startViewTransition || reducedMotion.matches) {
+        update(filter);
+        return;
+      }
+      cards.forEach((card) => (card.style.viewTransitionName = `project-${card.dataset.project}`));
+      const transition = document.startViewTransition(() => update(filter));
+      transition.finished.finally(() => cards.forEach((card) => (card.style.viewTransitionName = '')));
+    };
+
+    group.hidden = false;
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => {
+        const filter = b.dataset.filter!;
+        apply(filter);
+        const next = new URL(location.href);
+        if (filter === 'all') next.searchParams.delete('category');
+        else next.searchParams.set('category', filter);
+        history.replaceState(null, '', next);
+      }),
+    );
+
+    const initial = new URLSearchParams(location.search).get('category');
+    if (initial && valid.has(initial)) update(initial);
+  }
+</script>
+
+<style>
+  .project-filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-1) var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+
+  .project-filter button {
+    position: relative;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.25rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .project-filter button::after {
+    content: '';
+    position: absolute;
+    right: 0.25rem;
+    bottom: 0.4rem;
+    left: 0.25rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 300ms var(--ease);
+  }
+
+  .project-filter button:hover,
+  .project-filter button[aria-pressed='true'] {
+    color: var(--color-text);
+  }
+
+  .project-filter button:hover::after,
+  .project-filter button[aria-pressed='true']::after {
+    transform: scaleX(1);
+  }
+
+  .project-filter button[aria-pressed='true']::after {
+    background: var(--color-accent);
+  }
+
+  /* Editorial layout: a repeating pattern of large and small photos on a 12-column grid,
+     offset vertically so it reads like a magazine spread. data-slot (1-4) sets each card's place
+     and is recalculated when the filter hides cards. */
+  .project-grid {
+    display: grid;
+    gap: var(--space-6) var(--space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 48rem) {
+    .project-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: var(--space-5) var(--space-4);
+      align-items: start;
+    }
+
+    .project-grid :global([data-slot='1']) {
+      grid-column: 1 / span 7;
+      --ratio: 4 / 3;
+    }
+
+    .project-grid :global([data-slot='2']) {
+      grid-column: 9 / span 4;
+      margin-top: clamp(4rem, 12vw, 10rem);
+      --ratio: 4 / 5;
+    }
+
+    .project-grid :global([data-slot='3']) {
+      grid-column: 2 / span 4;
+      --ratio: 4 / 5;
+    }
+
+    .project-grid :global([data-slot='4']) {
+      grid-column: 7 / span 6;
+      margin-top: clamp(3rem, 8vw, 7rem);
+      --ratio: 4 / 3;
+    }
+  }
+
+  :global(.pswp) {
+    --pswp-bg: #1f1d1a;
+    --pswp-icon-color: #ffffff;
+    --pswp-icon-color-secondary: #1f1d1a;
+  }
+</style>

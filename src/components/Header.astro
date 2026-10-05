@@ -1,0 +1,499 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import logoLight from '../assets/logo-light.png';
+import { nav, site } from '../site';
+import { url } from '../lib/url';
+import { getPages } from '../lib/content';
+
+interface Props {
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
+const current = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? current === url('/') : current.startsWith(url(href)));
+
+const menu = [{ label: 'Home', href: '/' }, ...nav];
+const services = await getPages('service');
+const cities = await getPages('city');
+---
+
+<header class:list={['site-header', { 'site-header--overlay': overlay }]}>
+  <div class="container site-header__inner">
+    <a class="site-header__logo" href={url('/')} aria-label={`${site.name} home`}>
+      <Image class="logo-dark" src={logo} alt="" width={176} height={22} densities={[1, 2]} loading="eager" />
+      {overlay && <Image class="logo-light" src={logoLight} alt="" width={176} height={22} densities={[1, 2]} loading="eager" />}
+    </a>
+
+    <button class="menu-button" type="button" aria-haspopup="dialog" aria-controls="site-menu" data-menu-open data-magnetic>
+      <span class="menu-button__label">menu</span>
+      <span class="menu-button__bars" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <!-- Without JavaScript the dialog can't open, so these links stay available. -->
+  <noscript>
+    <nav class="container noscript-nav" aria-label="Main">
+      {menu.map((item) => <a href={url(item.href)}>{item.label}</a>)}
+    </nav>
+  </noscript>
+</header>
+
+<dialog id="site-menu" class="menu" aria-label="Site menu">
+  <div class="menu__bar">
+    <div class="container menu__top">
+      <a class="site-header__logo" href={url('/')} aria-label={`${site.name} home`}>
+        <Image src={logo} alt="" width={176} height={22} densities={[1, 2]} />
+      </a>
+      <button class="menu-button" type="button" data-menu-close data-magnetic>
+        <span class="menu-button__label">close</span>
+        <span class="menu-button__bars menu-button__bars--close" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="container menu__body">
+    <nav aria-label="Main">
+      <ol class="menu__primary">
+        {
+          menu.map((item, i) => (
+            <li style={`--i: ${i}`}>
+              <a href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                <span class="menu__index" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="menu__secondary">
+      <nav aria-label="Services">
+        <h2>Services</h2>
+        <ul>
+          {
+            services.map((p) => (
+              <li>
+                <a href={url(`/${p.id}/`)}>{p.data.title}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <nav aria-label="Locations">
+        <h2>Locations</h2>
+        <ul>
+          {
+            cities.map((p) => (
+              <li>
+                <a href={url(`/${p.id}/`)}>{p.data.title}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      {
+        (site.email || site.phone) && (
+          <div>
+            <h2>Contact</h2>
+            <ul>
+              {site.email && (
+                <li>
+                  <a href={`mailto:${site.email}`}>{site.email}</a>
+                </li>
+              )}
+              {site.phone && (
+                <li>
+                  <a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a>
+                </li>
+              )}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</dialog>
+
+<script>
+  // Overlay header: solid once the hero has scrolled mostly out of view.
+  const overlayHeader = document.querySelector<HTMLElement>('.site-header--overlay');
+  if (overlayHeader) {
+    const update = () => overlayHeader.classList.toggle('is-solid', window.scrollY > window.innerHeight * 0.8);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  }
+
+  const dialog = document.querySelector<HTMLDialogElement>('#site-menu');
+  const openButton = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const closeButton = document.querySelector<HTMLButtonElement>('[data-menu-close]');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (dialog && openButton) {
+    const close = () => {
+      if (!dialog.open || dialog.classList.contains('is-closing')) return;
+      if (reducedMotion.matches) {
+        dialog.close();
+        return;
+      }
+      dialog.classList.add('is-closing');
+      dialog.addEventListener(
+        'animationend',
+        () => {
+          dialog.classList.remove('is-closing');
+          dialog.close();
+        },
+        { once: true },
+      );
+    };
+
+    openButton.addEventListener('click', () => {
+      dialog.showModal();
+      document.documentElement.classList.add('menu-open');
+    });
+    closeButton?.addEventListener('click', close);
+
+    // Escape: run the closing animation instead of closing instantly.
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      close();
+    });
+
+    dialog.addEventListener('close', () => {
+      document.documentElement.classList.remove('menu-open');
+      openButton.focus();
+    });
+
+    // Close before following a link to the page that's already open.
+    dialog.querySelectorAll('a').forEach((link) =>
+      link.addEventListener('click', () => {
+        if (link.getAttribute('aria-current') === 'page') close();
+      }),
+    );
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    view-transition-name: site-header;
+  }
+
+  /* Home page: floats transparent (white text) over the hero photo, turns solid after the hero. */
+  .site-header--overlay {
+    position: fixed;
+    right: 0;
+    left: 0;
+    border-bottom-color: transparent;
+    background: transparent;
+    color: #fff;
+    transition:
+      background-color 400ms var(--ease),
+      border-color 400ms var(--ease),
+      color 400ms var(--ease);
+  }
+
+  .site-header--overlay .menu-button {
+    color: inherit;
+  }
+
+  .logo-light {
+    display: none;
+  }
+
+  .site-header--overlay:not(.is-solid) .logo-dark {
+    display: none;
+  }
+
+  .site-header--overlay:not(.is-solid) .logo-light {
+    display: block;
+  }
+
+  .site-header--overlay:not(.is-solid) :focus-visible {
+    outline-color: #fff;
+  }
+
+  .site-header--overlay.is-solid {
+    border-bottom-color: var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .site-header__inner,
+  .menu__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-h);
+  }
+
+  .site-header__logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .site-header__logo img {
+    width: 176px;
+    height: auto;
+  }
+
+  .menu-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    margin-right: -0.5rem;
+    padding: 0 0.5rem;
+    border: 0;
+    background: none;
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    cursor: pointer;
+    transition: transform 300ms var(--ease);
+  }
+
+  .menu-button__bars,
+  .menu-button__bars::before,
+  .menu-button__bars::after {
+    display: block;
+    width: 1.5rem;
+    height: 1.5px;
+    background: currentColor;
+  }
+
+  .menu-button__bars {
+    position: relative;
+  }
+
+  .menu-button__bars::before,
+  .menu-button__bars::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    transition: width var(--dur-fast) var(--ease);
+  }
+
+  .menu-button__bars::before {
+    top: -7px;
+  }
+
+  .menu-button__bars::after {
+    top: 7px;
+    width: 1rem;
+  }
+
+  .menu-button:hover .menu-button__bars::after {
+    width: 1.5rem;
+  }
+
+  .menu-button__bars--close {
+    background: transparent;
+  }
+
+  .menu-button__bars--close::before,
+  .menu-button__bars--close::after {
+    top: 0;
+    width: 1.5rem;
+  }
+
+  .menu-button__bars--close::before {
+    transform: rotate(45deg);
+  }
+
+  .menu-button__bars--close::after {
+    transform: rotate(-45deg);
+  }
+
+  .menu-button:hover .menu-button__bars--close::after {
+    width: 1.5rem;
+  }
+
+  @media (max-width: 30rem) {
+    .menu-button__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+  }
+
+  .noscript-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-bottom: var(--space-2);
+  }
+
+  /* ---------- Full-screen menu ---------- */
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    overflow-y: auto;
+  }
+
+  .menu::backdrop {
+    background: transparent;
+  }
+
+  .menu__bar {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .menu__body {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-5) var(--space-6);
+  }
+
+  @media (min-width: 64rem) {
+    .menu__body {
+      grid-template-columns: 3fr 2fr;
+      align-items: end;
+      min-height: calc(100dvh - var(--header-h));
+    }
+  }
+
+  .menu__primary {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .menu__primary a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding-block: 0.15em;
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    text-transform: lowercase;
+    transition:
+      color var(--dur-fast) var(--ease),
+      transform 300ms var(--ease);
+  }
+
+  .menu__primary a:hover {
+    transform: translateX(0.5rem);
+  }
+
+  .menu__primary a[aria-current='page'] {
+    font-weight: 500;
+  }
+
+  .menu__primary a:hover .menu__index,
+  .menu__primary a[aria-current='page'] .menu__index {
+    color: var(--color-accent);
+  }
+
+  .menu__index {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  .menu__secondary {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+
+  .menu__secondary h2 {
+    margin-bottom: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .menu__secondary ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .menu__secondary a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    text-decoration: none;
+  }
+
+  .menu__secondary a:hover {
+    text-decoration: underline;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .menu[open] {
+      animation: menu-in 450ms var(--ease) both;
+    }
+
+    .menu[open] .menu__primary li {
+      animation: menu-item-in 600ms var(--ease) both;
+      animation-delay: calc(120ms + var(--i) * 60ms);
+    }
+
+    .menu[open] .menu__secondary {
+      animation: menu-item-in 600ms var(--ease) 450ms both;
+    }
+
+    .menu.is-closing {
+      animation: menu-out 300ms var(--ease) both;
+    }
+  }
+
+  @keyframes menu-in {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0);
+    }
+  }
+
+  @keyframes menu-out {
+    from {
+      clip-path: inset(0);
+    }
+    to {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  @keyframes menu-item-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  :global(html.menu-open) {
+    overflow: hidden;
+  }
+</style>

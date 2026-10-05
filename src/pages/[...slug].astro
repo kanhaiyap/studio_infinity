@@ -1,0 +1,170 @@
+---
+// Renders the About, service and city pages from src/content/pages/.
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Base, { type Crumb } from '../layouts/Base.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import LinkCards from '../components/LinkCards.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Headline from '../components/Headline.astro';
+import { getPages, getProjects, type Page } from '../lib/content';
+import { absoluteUrl } from '../lib/url';
+
+export async function getStaticPaths() {
+  const pages = await getPages();
+  return pages.map((page) => ({ params: { slug: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props as { page: Page };
+const { data } = page;
+const { Content } = await render(page);
+const allPages = await getPages();
+const path = `/${page.id}/`;
+
+const card = (p: Page) => ({ title: p.data.title, href: `/${p.id}/`, summary: p.data.summary });
+
+// Breadcrumbs
+const parentId = page.id.includes('/') ? page.id.split('/')[0] : null;
+const parent = parentId ? allPages.find((p) => p.id === parentId) : undefined;
+const breadcrumbs: Crumb[] = [
+  ...(data.kind === 'service' ? [{ name: 'Services', path: '/services/' }] : []),
+  ...(parent ? [{ name: parent.data.title, path: `/${parent.id}/` }] : []),
+  { name: data.title, path },
+];
+
+// Related content
+const city = data.city ?? parent?.data.city;
+const projects = data.kind === 'about' ? [] : await getProjects({ category: data.category, city });
+const children = allPages.filter((p) => p.id.startsWith(`${page.id}/`));
+const siblings = parent ? allPages.filter((p) => p.id.startsWith(`${parent.id}/`) && p.id !== page.id) : [];
+const services = data.kind === 'city' ? allPages.filter((p) => p.data.kind === 'service') : [];
+const cities = data.kind === 'service' ? allPages.filter((p) => p.data.kind === 'city') : [];
+
+// Structured data
+const schema =
+  data.kind === 'about'
+    ? [{ '@context': 'https://schema.org', '@type': 'AboutPage', name: data.metaTitle, description: data.description }]
+    : [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          name: data.title,
+          description: data.description,
+          url: absoluteUrl(path, Astro.site),
+          provider: { '@id': `${absoluteUrl('/', Astro.site)}#organization` },
+          areaServed: city
+            ? { '@type': 'City', name: city }
+            : ['Mumbai', 'Delhi', 'Bangalore', 'Jaipur'].map((name) => ({ '@type': 'City', name })),
+        },
+      ];
+
+const eyebrow = { about: 'About us', service: 'Service', city: 'Location', 'city-service': city ?? 'Location' }[data.kind];
+---
+
+<Base title={data.metaTitle} description={data.description} breadcrumbs={breadcrumbs} schema={schema} image={data.heroImage?.src}>
+  <section class="section section--tight container page-intro">
+    <span class="eyebrow">{eyebrow}</span>
+    <Headline text={data.title} class="page-title" />
+    {data.summary && <p class="lead">{data.summary}</p>}
+  </section>
+
+  {
+    data.heroImage && (
+      <div class="container page-hero section--tight section--flush-top">
+        <Image
+          src={data.heroImage}
+          alt={data.heroAlt ?? ''}
+          widths={[800, 1400, 2000]}
+          sizes="(min-width: 76rem) 76rem, 100vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    )
+  }
+
+  <section class="section section--tight section--flush-top container">
+    <div class="prose" data-reveal>
+      <Content />
+    </div>
+  </section>
+
+  {
+    children.length > 0 && (
+      <section class="section section--divided" aria-labelledby="children-heading">
+        <div class="container">
+          <h2 id="children-heading" class="section-label related-heading" data-reveal>
+            Our services in {city}
+          </h2>
+          <LinkCards items={children.map(card)} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    projects.length > 0 && (
+      <section class="section" aria-labelledby="projects-heading">
+        <div class="container">
+          <h2 id="projects-heading" class="section-label related-heading" data-reveal>
+            {city ? `Projects in ${city}` : 'Related projects'}
+          </h2>
+          <ProjectGrid projects={projects} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    services.length > 0 && (
+      <section class="section section--divided" aria-labelledby="services-heading">
+        <div class="container">
+          <h2 id="services-heading" class="section-label related-heading" data-reveal>
+            Services
+          </h2>
+          <LinkCards items={services.map(card)} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    cities.length > 0 && (
+      <section class="section section--divided" aria-labelledby="cities-heading">
+        <div class="container">
+          <h2 id="cities-heading" class="section-label related-heading" data-reveal>
+            Where we work
+          </h2>
+          <LinkCards items={cities.map(card)} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    siblings.length > 0 && (
+      <section class="section section--divided" aria-labelledby="siblings-heading">
+        <div class="container">
+          <h2 id="siblings-heading" class="section-label related-heading" data-reveal>
+            More in {city}
+          </h2>
+          <LinkCards items={[card(parent!), ...siblings.map(card)]} />
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand />
+</Base>
+
+<style>
+  .page-hero img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .related-heading {
+    margin-bottom: var(--space-4);
+  }
+</style>
