@@ -23,3 +23,9 @@ export async function getProjects(filter: { category?: string; city?: string; fe
   });
   return projects.sort(byOrder);
 }
+
+// First project photo matching a filter (used as the hero photo of city and service pages).
+export async function getCoverPhoto(filter: { category?: string; city?: string }) {
+  const project = (await getProjects(filter)).find((p) => p.data.cover);
+  return project && { src: project.data.cover!, alt: project.data.coverAlt ?? '' };
+}

@@ -7,7 +7,13 @@ import ProjectGrid from '../components/ProjectGrid.astro';
 import LinkCards from '../components/LinkCards.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Headline from '../components/Headline.astro';
-import { getPages, getProjects, type Page } from '../lib/content';
+import CityHero from '../components/CityHero.astro';
+import NextPage from '../components/NextPage.astro';
+import ServiceHero from '../components/ServiceHero.astro';
+import AboutHero from '../components/AboutHero.astro';
+import PhotoBand from '../components/PhotoBand.astro';
+import AboutApproach from '../components/AboutApproach.astro';
+import { getCoverPhoto, getPages, getProjects, type Page } from '../lib/content';
 import { absoluteUrl } from '../lib/url';
 
 export async function getStaticPaths() {
@@ -58,18 +64,89 @@ const schema =
         },
       ];
 
+// City and service pages: a designed hero (photo: the page's own, else a project from that city/category)
+// and a link to the next page in the series.
+const isCity = data.kind === 'city';
+const isService = data.kind === 'service';
+const series = isCity || isService ? allPages.filter((p) => p.data.kind === data.kind) : [];
+const seriesIndex = series.findIndex((p) => p.id === page.id);
+const pagePhoto = async (p: Page) =>
+  p.data.heroImage
+    ? { src: p.data.heroImage, alt: p.data.heroAlt ?? '' }
+    : await getCoverPhoto(p.data.kind === 'city' ? { city: p.data.city } : { category: p.data.category });
+const heroPhoto = series.length ? await pagePhoto(page) : undefined;
+const nextPage = series.length > 1 ? series[(seriesIndex + 1) % series.length] : undefined;
+const nextPhoto = nextPage ? await pagePhoto(nextPage) : undefined;
+const nextWord = nextPage && (nextPage.data.city ?? nextPage.data.category ?? nextPage.data.title.split(' ')[0]);
+
+// About page: every city for the hero, and a band of project photos.
+const isAbout = data.kind === 'about';
+const aboutCities = isAbout ? allPages.filter((p) => p.data.kind === 'city').map((p) => p.data.city ?? p.data.title) : [];
+const bandPhotos = isAbout
+  ? (await getProjects())
+      .filter((p) => p.data.cover)
+      .slice(0, 4)
+      .map((p) => ({ src: p.data.cover!, alt: p.data.coverAlt ?? p.data.title }))
+  : [];
+
 const eyebrow = { about: 'About us', service: 'Service', city: 'Location', 'city-service': city ?? 'Location' }[data.kind];
 ---
 
-<Base title={data.metaTitle} description={data.description} breadcrumbs={breadcrumbs} schema={schema} image={data.heroImage?.src}>
-  <section class="section section--tight container page-intro">
-    <span class="eyebrow">{eyebrow}</span>
-    <Headline text={data.title} class="page-title" />
-    {data.summary && <p class="lead">{data.summary}</p>}
-  </section>
+<Base
+  title={data.metaTitle}
+  description={data.description}
+  breadcrumbs={breadcrumbs}
+  schema={schema}
+  image={(data.heroImage ?? heroPhoto?.src)?.src}
+  overlayHeader={isCity && !!heroPhoto}
+>
+  {/* Kept in its own expression: an element with slot="hero" moves its whole {} expression into that slot. */}
+  {
+    isCity && (
+      <CityHero
+        slot="hero"
+        title={data.title}
+        city={data.city ?? data.title}
+        summary={data.summary}
+        index={seriesIndex}
+        total={series.length}
+        coordinates={data.coordinates}
+        photo={heroPhoto?.src}
+        photoAlt={heroPhoto?.alt}
+      />
+    )
+  }
 
   {
-    data.heroImage && (
+    isService ? (
+      <ServiceHero
+        title={data.title}
+        summary={data.summary}
+        index={seriesIndex}
+        total={series.length}
+        cities={cities.map((c) => c.data.city ?? c.data.title)}
+        photo={heroPhoto?.src}
+        photoAlt={heroPhoto?.alt}
+      />
+    ) : isAbout ? (
+      <>
+        <AboutHero title={data.title} summary={data.summary} cities={aboutCities} />
+        <PhotoBand photos={bandPhotos} />
+        <AboutApproach />
+      </>
+    ) : (
+      !isCity && (
+        <section class="section section--tight container page-intro">
+          <span class="eyebrow">{eyebrow}</span>
+          <Headline text={data.title} class="page-title" />
+          {data.summary && <p class="lead">{data.summary}</p>}
+        </section>
+      )
+    )
+  }
+
+  {
+    data.heroImage && !isCity && !isService && !isAbout && (
       <div class="container page-hero section--tight section--flush-top">
         <Image
           src={data.heroImage}
@@ -83,8 +160,8 @@ const eyebrow = { about: 'About us', service: 'Service', city: 'Location', 'city
     )
   }
 
-  <section class="section section--tight section--flush-top container">
-    <div class="prose" data-reveal>
+  <section class:list={['section container', isCity ? 'city-intro' : isAbout ? '' : 'section--tight section--flush-top']}>
+    <div class:list={['prose', { 'prose--lede': isCity || isService || isAbout, 'prose--split': isService || isAbout }]} data-reveal>
       <Content />
     </div>
   </section>
@@ -154,14 +231,233 @@ const eyebrow = { about: 'About us', service: 'Service', city: 'Location', 'city
     )
   }
 
+  {
+    nextPage && nextWord && (
+      <NextPage
+        href={`/${nextPage.id}/`}
+        title={nextPage.data.title}
+        word={nextWord}
+        label={isCity ? 'Next location' : 'Next service'}
+        photo={nextPhoto?.src}
+      />
+    )
+  }
+
   <CtaBand />
 </Base>
+
+<script>
+  // About: draws the process line across "How we work" as it scrolls through the viewport.
+  const steps = document.querySelector<HTMLElement>('.prose--split > ol');
+  if (steps && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const rect = steps.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 when the list's top reaches 85% of the viewport, 1 when it reaches 35%.
+      const p = Math.min(1, Math.max(0, (vh * 0.85 - rect.top) / (vh * 0.5)));
+      steps.style.setProperty('--progress', p.toFixed(3));
+    };
+    const queue = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    update();
+  }
+</script>
 
 <style>
   .page-hero img {
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
+  }
+
+  /* City pages: the opening paragraph becomes a large statement sentence. */
+  .city-intro {
+    padding-top: var(--space-6);
+  }
+
+  .prose--lede {
+    max-width: none;
+  }
+
+  .prose--lede > :global(*) {
+    max-width: 44rem;
+  }
+
+  .prose--lede > :global(p:first-child) {
+    max-width: 22em;
+    margin-bottom: var(--space-5);
+    font-size: clamp(1.625rem, 3.4vw, 3rem);
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  /* Service pages: headings in a left column, their content on the right; lists become large numbered rows. */
+  @media (min-width: 60rem) {
+    .prose--split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      column-gap: var(--space-6);
+    }
+
+    .prose--split > :global(*) {
+      grid-column: 2;
+    }
+
+    .prose--split > :global(p:first-child) {
+      grid-column: 1 / -1;
+    }
+
+    .prose--split > :global(h2) {
+      grid-column: 1;
+      margin-top: 0;
+      padding-top: var(--space-3);
+    }
+  }
+
+  .prose--split > :global(h2) {
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .prose--split > :global(h2 ~ *:not(h2)) {
+    margin-bottom: var(--space-6);
+  }
+
+  .prose--split > :global(ul) {
+    padding: 0;
+    list-style: none;
+    counter-reset: row;
+  }
+
+  .prose--split > :global(ul li) {
+    display: flex;
+    gap: var(--space-3);
+    align-items: baseline;
+    margin: 0;
+    padding-block: var(--space-2);
+    border-top: 1px solid var(--color-border);
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    font-weight: 300;
+    line-height: 1.25;
+    counter-increment: row;
+  }
+
+  .prose--split > :global(ul li:last-child) {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .prose--split > :global(ul li::before) {
+    content: counter(row, decimal-leading-zero);
+    flex: none;
+    width: 2.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.1em;
+  }
+
+  /* About: the numbered "How we work" list becomes a four-step process. A dark line draws across the steps
+     as they scroll into view, with the lime dot at its tip (see the script below). */
+  @media (min-width: 60rem) {
+    .prose--split > :global(h2:has(+ ol)),
+    .prose--split > :global(ol) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .prose--split > :global(ol) {
+    position: relative;
+    display: grid;
+    max-width: none;
+    gap: var(--space-4) var(--space-4);
+    margin-top: var(--space-3);
+    padding: var(--space-4) 0 0;
+    list-style: none;
+    counter-reset: step;
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (min-width: 48rem) {
+    .prose--split > :global(ol) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .prose--split > :global(ol) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .prose--split > :global(ol li) {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    counter-increment: step;
+  }
+
+  .prose--split > :global(ol li::before) {
+    content: counter(step, decimal-leading-zero);
+    display: block;
+    margin-bottom: var(--space-2);
+    color: var(--color-text);
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prose--split > :global(ol li strong) {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--color-text);
+    font-size: 1.25rem;
+    font-weight: 400;
+  }
+
+  /* Progress line and dot, drawn over the list's top hairline. --progress (0-1) is set on scroll. */
+  .prose--split > :global(ol::before),
+  .prose--split > :global(ol::after) {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+  }
+
+  .prose--split > :global(ol::before) {
+    width: 100%;
+    height: 2px;
+    margin-top: -0.5px;
+    background: var(--color-text);
+    transform: scaleX(var(--progress, 1));
+    transform-origin: left;
+  }
+
+  .prose--split > :global(ol::after) {
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-top: calc(-0.375rem + 0.5px);
+    border: 1.25px solid var(--color-on-pop);
+    border-radius: 50%;
+    background: var(--color-pop);
+    translate: calc(var(--progress, 1) * (100cqw - 0.75rem)) 0;
+  }
+
+  .prose--split > :global(ol) {
+    container-type: inline-size;
   }
 
   .related-heading {

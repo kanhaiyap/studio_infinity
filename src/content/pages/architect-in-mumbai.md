@@ -7,6 +7,7 @@ metaTitle: Architect in Mumbai | Residential, Commercial & Interiors | Studio In
 description: Looking for an architect in Mumbai? Studio Infinity designs homes, commercial spaces and interiors in Mumbai, from concept to completion.
 kind: city
 city: Mumbai
+coordinates: [19.076, 72.8777]
 order: 1
 summary: Architecture and interior design projects in Mumbai.
 ---

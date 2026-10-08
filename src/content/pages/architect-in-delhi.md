@@ -7,6 +7,7 @@ metaTitle: Architect in Delhi | Residential, Commercial & Interiors | Studio Inf
 description: Looking for an architect in Delhi? Studio Infinity designs homes, commercial spaces and interiors in Delhi, from concept to completion.
 kind: city
 city: Delhi
+coordinates: [28.6139, 77.209]
 order: 2
 summary: Architecture and interior design projects in Delhi.
 ---

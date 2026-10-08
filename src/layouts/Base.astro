@@ -101,6 +101,7 @@ const jsonLd = [organization, breadcrumbSchema, ...schema].filter(Boolean);
     <a class="skip-link" href="#main">Skip to content</a>
     <Header overlay={overlayHeader} />
     <main id="main">
+      <slot name="hero" /><!-- full-screen hero that sits above the breadcrumbs (city pages) -->
       {
         breadcrumbs.length > 0 && (
           <nav class="breadcrumbs container" aria-label="Breadcrumb">

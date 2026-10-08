@@ -1,0 +1,316 @@
+---
+// Full-screen hero for a city page. The city name runs edge to edge in widely spread lowercase letters
+// (echoing the "infinite" wordmark), over a project photo from that city. The meta row shows the
+// location number, the city's coordinates and its live local time. Without a photo it sits on warm grey.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Headline from './Headline.astro';
+
+interface Props {
+  title: string; // the page's h1, e.g. "Architect in Mumbai"
+  city: string;
+  summary?: string;
+  index: number; // 0-based position among the city pages
+  total: number;
+  coordinates?: [number, number]; // [latitude, longitude]
+  photo?: ImageMetadata;
+  photoAlt?: string;
+}
+
+const { title, city, summary, index, total, coordinates, photo, photoAlt = '' } = Astro.props;
+const letters = [...city.toLowerCase()];
+const pad = (n: number) => String(n).padStart(2, '0');
+const coord = (value: number, pos: string, neg: string) => `${Math.abs(value).toFixed(4)}° ${value >= 0 ? pos : neg}`;
+---
+
+<section class:list={['city-hero', { 'city-hero--photo': photo }]} style={`--len: ${letters.length}`} data-city-hero>
+  {
+    photo && (
+      <div class="city-hero__media">
+        <Image src={photo} alt={photoAlt} widths={[800, 1280, 1920, 2560]} sizes="100vw" loading="eager" fetchpriority="high" />
+      </div>
+    )
+  }
+
+  <div class="container city-hero__meta">
+    <span class="city-hero__index">Location {pad(index + 1)} / {pad(total)}</span>
+    {
+      coordinates && (
+        <span class="city-hero__coords">
+          {coord(coordinates[0], 'N', 'S')}, {coord(coordinates[1], 'E', 'W')}
+        </span>
+      )
+    }
+    <span class="city-hero__time" hidden data-local-time>
+      <span>Local time <time></time> IST</span>
+    </span>
+  </div>
+
+  <div class="container city-hero__body">
+    <Headline text={title} class="city-hero__title" />
+    {summary && <p class="city-hero__lead">{summary}</p>}
+  </div>
+
+  <p class="city-hero__name" aria-hidden="true">
+    {
+      letters.map((letter, i) => (
+        <span class="city-hero__letter">
+          <span style={`--i: ${i}`}>{letter}</span>
+        </span>
+      ))
+    }
+  </p>
+</section>
+
+<script>
+  // Live local time (all four cities are on India Standard Time).
+  const clock = document.querySelector<HTMLElement>('[data-local-time]');
+  if (clock) {
+    const time = clock.querySelector('time')!;
+    const format = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' });
+    const tick = () => (time.textContent = format.format(new Date()));
+    tick();
+    clock.hidden = false;
+    window.setInterval(tick, 15000);
+  }
+
+  // Scroll progress through the hero (0 → 1) drives the photo and name drifting apart.
+  const hero = document.querySelector<HTMLElement>('[data-city-hero]');
+  if (hero && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const p = Math.min(1, Math.max(0, window.scrollY / hero.offsetHeight));
+      hero.style.setProperty('--p', p.toFixed(3));
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
+</script>
+
+<style>
+  .city-hero {
+    --p: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    overflow: hidden;
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .city-hero--photo {
+    min-height: max(100svh, 36rem);
+    background: #1f1d1a;
+    color: #fff;
+  }
+
+  /* Photo */
+  .city-hero__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .city-hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translateY(calc(var(--p) * 18%)) scale(calc(1.04 + var(--p) * 0.06));
+  }
+
+  /* Darkens the top (header, meta) and bottom (title, name) for legible white text. */
+  .city-hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.5) 0%,
+      rgb(0 0 0 / 0.12) 28%,
+      rgb(0 0 0 / 0.18) 50%,
+      rgb(0 0 0 / 0.68) 100%
+    );
+  }
+
+  .city-hero > :not(.city-hero__media) {
+    position: relative;
+  }
+
+  /* Meta row: location number, coordinates, local time. */
+  .city-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 2.5rem;
+    padding-top: var(--space-4);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .city-hero--photo .city-hero__meta {
+    padding-top: calc(var(--header-h) + var(--space-3));
+  }
+
+  /* Location number: a lime chip. */
+  .city-hero__index {
+    padding: 0.2rem 0.55rem;
+    background: var(--color-pop);
+    color: var(--color-on-pop);
+  }
+
+  /* Local time: a pulsing lime "live" dot. */
+  .city-hero__time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .city-hero__time::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-pop);
+    box-shadow: 0 0 0 1px var(--color-on-pop);
+  }
+
+  .city-hero--photo .city-hero__time::before {
+    box-shadow: 0 0 0 0 rgb(198 255 61 / 0.6);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .city-hero--photo .city-hero__time::before {
+      animation: city-live 2s ease-out infinite;
+    }
+  }
+
+  @keyframes city-live {
+    to {
+      box-shadow: 0 0 0 0.6rem rgb(198 255 61 / 0);
+    }
+  }
+
+  .city-hero__coords,
+  .city-hero__time {
+    color: var(--color-text-muted);
+  }
+
+  .city-hero--photo .city-hero__coords,
+  .city-hero--photo .city-hero__time {
+    color: rgb(255 255 255 / 0.82);
+  }
+
+  .city-hero__time time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Title and summary, just above the city name. */
+  .city-hero__body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+    margin-top: auto;
+    padding-top: var(--space-6);
+  }
+
+  .city-hero :global(.city-hero__title) {
+    margin: 0;
+    font-size: clamp(2rem, 4.2vw, 3.5rem);
+  }
+
+  /* The city word in the title: lime on the photo, a lime highlighter stroke on warm grey. */
+  .city-hero--photo :global(.city-hero__title .headline__word:last-of-type) {
+    color: var(--color-pop);
+  }
+
+  .city-hero:not(.city-hero--photo) :global(.city-hero__title .headline__word:last-of-type) {
+    background: linear-gradient(var(--color-pop), var(--color-pop)) 0 88% / 100% 0.32em no-repeat;
+  }
+
+  .city-hero__lead {
+    max-width: 24rem;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 1.0625rem;
+  }
+
+  .city-hero--photo .city-hero__lead {
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  /* The city name: letters spread across the full width, like the logo's "infinite". */
+  .city-hero__name {
+    display: flex;
+    justify-content: space-between;
+    margin: var(--space-3) 0 0;
+    padding: 0 var(--gutter) calc(0.12em + clamp(0.5rem, 1.5vw, 1rem)); /* room for descenders (g, j, p) */
+    font-size: min(calc(150vw / var(--len)), 34svh);
+    font-weight: 500;
+    line-height: 0.82;
+    letter-spacing: 0;
+    transform: translateY(calc(var(--p) * -22%));
+    user-select: none;
+  }
+
+  /* Each letter rises through its own mask; padding keeps descenders (j, p) unclipped. */
+  .city-hero__letter {
+    display: inline-block;
+    overflow: hidden;
+    padding-block: 0.12em 0.16em; /* room for ascenders (f, d, l) and descenders inside the mask */
+    margin-block: -0.12em -0.16em;
+  }
+
+  .city-hero__letter > span {
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .city-hero__media {
+      animation: city-photo-in 2200ms var(--ease) both;
+    }
+
+    .city-hero__letter > span {
+      animation: city-letter-up 1300ms var(--ease) both;
+      animation-delay: calc(250ms + var(--i) * 70ms);
+    }
+
+    .city-hero__meta,
+    .city-hero__lead {
+      animation: city-fade-in 900ms var(--ease) 500ms both;
+    }
+  }
+
+  @keyframes city-photo-in {
+    from {
+      transform: scale(1.12);
+      opacity: 0;
+    }
+  }
+
+  @keyframes city-letter-up {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  @keyframes city-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+</style>

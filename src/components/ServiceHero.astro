@@ -1,0 +1,143 @@
+---
+// Split hero for a service page: lime "Service 01 / 03" chip, title and summary on the left,
+// a tall project photo on the right that wipes open on load and drifts on scroll.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Headline from './Headline.astro';
+
+interface Props {
+  title: string;
+  summary?: string;
+  index: number; // 0-based position among the service pages
+  total: number;
+  cities: string[];
+  photo?: ImageMetadata;
+  photoAlt?: string;
+}
+
+const { title, summary, index, total, cities, photo, photoAlt = '' } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class:list={['container service-hero', { 'service-hero--photo': photo }]}>
+  <div class="service-hero__text">
+    <p class="service-hero__meta">
+      <span class="service-hero__index">Service {pad(index + 1)} / {pad(total)}</span>
+      <span>{cities.join(' · ')}</span>
+    </p>
+    <Headline text={title} class="service-hero__title" />
+    {summary && <p class="lead service-hero__lead">{summary}</p>}
+  </div>
+
+  {
+    photo && (
+      <div class="service-hero__media" data-parallax>
+        <Image src={photo} alt={photoAlt} widths={[600, 900, 1300, 1800]} sizes="(min-width: 60rem) 45vw, 100vw" loading="eager" fetchpriority="high" />
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .service-hero {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-5) var(--space-6);
+  }
+
+  @media (min-width: 60rem) {
+    .service-hero--photo {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+      align-items: center;
+      gap: var(--space-6);
+    }
+  }
+
+  .service-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 2rem;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* Lime chip (lime is only ever a fill behind dark text on light backgrounds). */
+  .service-hero__index {
+    padding: 0.2rem 0.55rem;
+    background: var(--color-pop);
+    color: var(--color-on-pop);
+  }
+
+  .service-hero :global(.service-hero__title) {
+    margin: 0 0 var(--space-3);
+    font-size: clamp(2.75rem, 6.4vw, 6rem);
+    line-height: 1;
+  }
+
+  .service-hero__lead {
+    margin: 0;
+  }
+
+  .service-hero__media {
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+  }
+
+  @media (min-width: 60rem) {
+    .service-hero__media {
+      aspect-ratio: 4 / 5;
+      max-height: 78svh;
+      width: 100%;
+      justify-self: end;
+    }
+  }
+
+  .service-hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translateY(calc(var(--py, 0) * 1%)) scale(1.1);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .service-hero__media {
+      animation: service-wipe 1400ms var(--ease) 200ms both;
+    }
+
+    .service-hero__media img {
+      animation: service-settle 2200ms var(--ease) 200ms both;
+    }
+
+    .service-hero__meta,
+    .service-hero__lead {
+      animation: service-fade 900ms var(--ease) 400ms both;
+    }
+  }
+
+  @keyframes service-wipe {
+    from {
+      clip-path: inset(100% 0 0 0);
+    }
+    to {
+      clip-path: inset(0);
+    }
+  }
+
+  @keyframes service-settle {
+    from {
+      scale: 1.15;
+    }
+  }
+
+  @keyframes service-fade {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+</style>

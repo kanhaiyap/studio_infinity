@@ -7,6 +7,7 @@ metaTitle: Architect in Bangalore | Residential, Commercial & Interiors | Studio
 description: Looking for an architect in Bangalore? Studio Infinity designs homes, commercial spaces and interiors in Bangalore, from concept to completion.
 kind: city
 city: Bangalore
+coordinates: [12.9716, 77.5946]
 order: 3
 summary: Architecture and interior design projects in Bangalore.
 ---

@@ -1,6 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
-import Headline from '../components/Headline.astro';
+import WordHero from '../components/WordHero.astro';
+import LinkCards from '../components/LinkCards.astro';
+import { getPages } from '../lib/content';
 import { site } from '../site';
 
 // Contact page text — edit here. Contact details are set in src/site.ts.
@@ -9,11 +11,21 @@ const meta = {
   description:
     'Get in touch with Studio Infinity to discuss your residential, commercial or interior design project in Mumbai, Delhi, Bangalore or Jaipur.',
 };
-const intro = "Tell us about your project — the site, the brief and your timeline — and we'll get back to you.";
+const intro = "Do you have a project? Tell us about the site, the brief and your timeline, and we'll get back to you.";
+const citiesHeading = 'Where we work';
 
 const { street, city, region, postalCode } = site.address;
 const addressLines = [street, [city, region, postalCode].filter(Boolean).join(', ')].filter(Boolean);
-const hasDetails = site.email || site.phone || site.whatsapp || addressLines.length;
+
+// Each detail is a large row; empty details in src/site.ts are left out.
+const details = [
+  site.email && { label: 'Email', value: site.email, href: `mailto:${site.email}` },
+  site.phone && { label: 'Call', value: site.phone, href: `tel:${site.phone.replace(/\s/g, '')}` },
+  site.whatsapp && { label: 'WhatsApp', value: 'Message us', href: `https://wa.me/${site.whatsapp}`, external: true },
+].filter((d): d is { label: string; value: string; href: string; external?: boolean } => Boolean(d));
+
+const cities = await getPages('city');
+const hasDetails = details.length > 0 || addressLines.length > 0;
 ---
 
 <Base
@@ -22,102 +34,175 @@ const hasDetails = site.email || site.phone || site.whatsapp || addressLines.len
   breadcrumbs={[{ name: 'Contact', path: '/contact/' }]}
   schema={[{ '@context': 'https://schema.org', '@type': 'ContactPage', name: meta.title, description: meta.description }]}
 >
-  <section class="section section--tight container page-intro">
-    <span class="eyebrow">Contact</span>
-    <Headline text="Do you have a project?" class="page-title" />
-    <p class="lead">{intro}</p>
-  </section>
+  <WordHero word="contact" label="Contact Studio Infinity" chip="Get in touch" meta={cities.map((c) => c.data.city ?? c.data.title.replace(/^Architect in /, ''))} intro={intro} />
 
-  <section class="section section--tight section--flush-top container">
+  <section class="section section--flush-top container" aria-label="Contact details">
     {
       import.meta.env.DEV && !hasDetails && (
         <p class="dev-note">Add the studio's email, phone, WhatsApp and address in src/site.ts. This note only appears while developing.</p>
       )
     }
-    <dl class="contact-list" data-reveal>
-      {
-        site.email && (
-          <div>
-            <dt>Email</dt>
-            <dd>
-              <a href={`mailto:${site.email}`}>{site.email}</a>
-            </dd>
-          </div>
-        )
-      }
-      {
-        site.phone && (
-          <div>
-            <dt>Phone</dt>
-            <dd>
-              <a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a>
-            </dd>
-          </div>
-        )
-      }
-      {
-        site.whatsapp && (
-          <div>
-            <dt>WhatsApp</dt>
-            <dd>
-              <a href={`https://wa.me/${site.whatsapp}`} rel="noopener" target="_blank">
-                Message us on WhatsApp
+    {
+      details.length > 0 && (
+        <ul class="contact-rows">
+          {details.map((d, i) => (
+            <li data-reveal style={`--reveal-i: ${i}`}>
+              <a href={d.href} {...(d.external && { target: '_blank', rel: 'noopener' })}>
+                <span class="contact-rows__label">{d.label}</span>
+                <span class="contact-rows__value">{d.value}</span>
+                <span class="contact-rows__arrow" aria-hidden="true">
+                  →
+                </span>
+                {d.external && <span class="visually-hidden">(opens in a new tab)</span>}
               </a>
-            </dd>
-          </div>
-        )
-      }
-      {
-        addressLines.length > 0 && (
-          <div>
-            <dt>Studio</dt>
-            <dd>
-              <address>
-                {addressLines.map((line) => (
-                  <>
-                    {line}
-                    <br />
-                  </>
-                ))}
-              </address>
-            </dd>
-          </div>
-        )
-      }
-    </dl>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    {
+      addressLines.length > 0 && (
+        <div class="contact-studio" data-reveal>
+          <span class="contact-rows__label">Studio</span>
+          <address>
+            {addressLines.map((line) => (
+              <>
+                {line}
+                <br />
+              </>
+            ))}
+          </address>
+        </div>
+      )
+    }
   </section>
+
+  {
+    cities.length > 0 && (
+      <section class="section section--divided" aria-labelledby="cities-heading">
+        <div class="container">
+          <h2 id="cities-heading" class="section-label contact-cities__heading" data-reveal>
+            {citiesHeading}
+          </h2>
+          <LinkCards items={cities.map((c) => ({ title: c.data.title, href: `/${c.id}/`, summary: c.data.summary }))} />
+        </div>
+      </section>
+    )
+  }
 </Base>
 
 <style>
-  .contact-list {
+  /* Large typographic rows, like the services list: label, value, arrow. The other rows fade back
+     while one is hovered, and the label becomes a lime chip. */
+  .contact-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .contact-rows a {
     display: grid;
-    gap: var(--space-4);
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    margin: 0 0 var(--space-7);
-  }
-
-  .contact-list div {
-    padding-top: var(--space-2);
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem var(--space-3);
+    padding-block: clamp(1.5rem, 3.5vw, 2.75rem);
     border-top: 1px solid var(--color-border);
+    text-decoration: none;
+    touch-action: manipulation;
+    transition: opacity 400ms var(--ease);
   }
 
-  .contact-list dt {
-    margin-bottom: var(--space-1);
+  @media (hover: hover) {
+    .contact-rows:hover a:not(:hover) {
+      opacity: 0.35;
+    }
+  }
+
+  .contact-rows__label {
+    justify-self: start;
+    padding: 0.15rem 0.45rem;
+    margin-left: -0.45rem;
     color: var(--color-text-muted);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.18em;
     text-transform: uppercase;
+    transition:
+      background-color 300ms var(--ease),
+      color 300ms var(--ease);
   }
 
-  .contact-list dd {
-    margin: 0;
-    font-size: 1.25rem;
+  .contact-rows a:hover .contact-rows__label,
+  .contact-rows a:focus-visible .contact-rows__label {
+    background: var(--color-pop);
+    color: var(--color-on-pop);
+  }
+
+  .contact-rows__value {
+    grid-column: 1;
+    font-size: clamp(1.75rem, 5.2vw, 4.5rem);
     font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere; /* long email addresses on small screens */
+    transition: transform 600ms var(--ease);
   }
 
-  .contact-list address {
+  .contact-rows a:hover .contact-rows__value {
+    transform: translateX(1rem);
+  }
+
+  .contact-rows__arrow {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-size: 1.75rem;
+    font-weight: 300;
+    transition: transform 450ms var(--ease);
+  }
+
+  .contact-rows a:hover .contact-rows__arrow {
+    transform: translateX(0.5rem);
+  }
+
+  @media (min-width: 64rem) {
+    .contact-rows a {
+      grid-template-columns: 12rem minmax(0, 1fr) 2rem;
+    }
+
+    .contact-rows__value {
+      grid-column: 2;
+    }
+
+    .contact-rows__arrow {
+      grid-column: 3;
+      grid-row: 1;
+    }
+  }
+
+  .contact-studio {
+    display: grid;
+    gap: 0.75rem var(--space-3);
+    padding-top: var(--space-4);
+  }
+
+  .contact-studio address {
+    max-width: 24em;
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
     font-style: normal;
+    font-weight: 300;
+    line-height: 1.35;
+  }
+
+  @media (min-width: 64rem) {
+    .contact-studio {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  .contact-cities__heading {
+    margin-bottom: var(--space-4);
   }
 
   .dev-note {

@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Headline from '../components/Headline.astro';
+import WordHero from '../components/WordHero.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { getProjects } from '../lib/content';
@@ -14,16 +14,16 @@ const meta = {
 const intro = "Explore the spaces we've designed and built.";
 
 const projects = await getProjects();
+const pad = (n: number) => String(n).padStart(2, '0');
+const cities = new Set(projects.map((p) => p.data.city.toLowerCase())).size;
+const counts =
+  projects.length > 0 ? [`${pad(projects.length)} project${projects.length === 1 ? '' : 's'}`, `${pad(cities)} cit${cities === 1 ? 'y' : 'ies'}`] : [];
 ---
 
 <Base title={meta.title} description={meta.description} breadcrumbs={[{ name: 'Projects', path: '/projects/' }]}>
-  <section class="section section--tight container page-intro">
-    <span class="eyebrow">Portfolio</span>
-    <Headline text="Projects" class="page-title" />
-    <p class="lead">{intro}</p>
-  </section>
+  <WordHero word="projects" label="Projects" chip="Portfolio" meta={counts} intro={intro} />
 
-  <section class="section section--tight section--flush-top container" aria-label="Project list">
+  <section class="section section--flush-top container" aria-label="Project list">
     {projects.length > 0 ? <ProjectGrid projects={projects} filterable /> : <p class="lead">New projects are being added soon.</p>}
   </section>
 

@@ -17,6 +17,7 @@ const pages = defineCollection({
       summary: z.string().optional(), // short text used on cards linking to this page
       category: category.optional(), // service pages: which projects to show
       city: z.string().optional(), // city pages: which projects to show
+      coordinates: z.tuple([z.number(), z.number()]).optional(), // city pages: [latitude, longitude], shown in the hero
       order: z.number().default(0),
       heroImage: image().optional(),
       heroAlt: z.string().optional(),

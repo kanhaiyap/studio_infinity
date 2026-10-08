@@ -1,0 +1,129 @@
+---
+// About page hero: lime chip and cities, then the studio's name spread edge to edge in lowercase
+// letters (like the logo's "infinite", and the city/services heroes), with the title and summary below.
+import Headline from './Headline.astro';
+
+interface Props {
+  title: string;
+  summary?: string;
+  cities: string[];
+}
+
+const { title, summary, cities } = Astro.props;
+const letters = [...'infinity'];
+---
+
+<section class="about-hero">
+  <p class="container about-hero__meta">
+    <span class="about-hero__chip">About us</span>
+    <span>{cities.join(' · ')}</span>
+  </p>
+
+  <p class="about-hero__word" style={`--len: ${letters.length}`} aria-hidden="true">
+    {
+      letters.map((letter, i) => (
+        <span class="about-hero__letter">
+          <span style={`--i: ${i}`}>{letter}</span>
+        </span>
+      ))
+    }
+  </p>
+
+  <div class="container about-hero__body">
+    <Headline text={title} class="about-hero__title" />
+    {summary && <p class="lead about-hero__lead">{summary}</p>}
+  </div>
+</section>
+
+<style>
+  .about-hero {
+    padding-block: var(--space-4) var(--space-6);
+    overflow: hidden;
+  }
+
+  .about-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 2rem;
+    margin-block: 0;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .about-hero__chip {
+    padding: 0.2rem 0.55rem;
+    background: var(--color-pop);
+    color: var(--color-on-pop);
+  }
+
+  /* The name: letters spread across the full width. */
+  .about-hero__word {
+    display: flex;
+    justify-content: space-between;
+    margin: var(--space-3) 0 var(--space-5);
+    padding-inline: var(--gutter);
+    font-size: min(calc(150vw / var(--len)), 15rem);
+    font-weight: 500;
+    line-height: 0.82;
+    user-select: none;
+  }
+
+  /* Each letter rises through its own mask; padding keeps the descender of "y" unclipped. */
+  .about-hero__letter {
+    display: inline-block;
+    overflow: hidden;
+    padding-block: 0.12em 0.16em; /* room for ascenders (f, d, l) and descenders inside the mask */
+    margin-block: -0.12em -0.16em;
+  }
+
+  .about-hero__letter > span {
+    display: inline-block;
+  }
+
+  .about-hero__body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .about-hero :global(.about-hero__title) {
+    margin: 0;
+    font-size: clamp(2rem, 4.2vw, 3.5rem);
+  }
+
+  .about-hero__lead {
+    max-width: 26rem;
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .about-hero__letter > span {
+      animation: about-letter-up 1300ms var(--ease) both;
+      animation-delay: calc(150ms + var(--i) * 60ms);
+    }
+
+    .about-hero__meta,
+    .about-hero__lead {
+      animation: about-fade 900ms var(--ease) 450ms both;
+    }
+  }
+
+  @keyframes about-letter-up {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  @keyframes about-fade {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+</style>

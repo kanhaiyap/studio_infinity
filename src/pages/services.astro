@@ -1,9 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import Headline from '../components/Headline.astro';
-import LinkCards from '../components/LinkCards.astro';
+import WordHero from '../components/WordHero.astro';
+import ServiceList from '../components/ServiceList.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { getPages } from '../lib/content';
+import { getCoverPhoto, getPages } from '../lib/content';
 
 // Services page text — edit here.
 const meta = {
@@ -14,17 +14,21 @@ const meta = {
 const intro = 'From the first sketch to the finished space, we work across residential, commercial and interior projects.';
 
 const services = await getPages('service');
+const items = await Promise.all(
+  services.map(async (p) => ({
+    title: p.data.title,
+    href: `/${p.id}/`,
+    summary: p.data.summary,
+    photo: p.data.heroImage ?? (await getCoverPhoto({ category: p.data.category }))?.src,
+  })),
+);
 ---
 
 <Base title={meta.title} description={meta.description} breadcrumbs={[{ name: 'Services', path: '/services/' }]}>
-  <section class="section section--tight container page-intro">
-    <span class="eyebrow">What we do</span>
-    <Headline text="Services" class="page-title" />
-    <p class="lead">{intro}</p>
-  </section>
+  <WordHero word="services" label="Services" chip="What we do" meta={[`${String(services.length).padStart(2, '0')} disciplines`]} intro={intro} />
 
-  <section class="section section--tight section--flush-top container" aria-label="Our services">
-    <LinkCards items={services.map((p) => ({ title: p.data.title, href: `/${p.id}/`, summary: p.data.summary }))} />
+  <section class="section section--flush-top container" aria-label="Our services">
+    <ServiceList items={items} />
   </section>
 
   <CtaBand />

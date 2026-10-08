@@ -12,6 +12,10 @@
   --color-inverse: #111111;
   --color-on-inverse: #ffffff;
   --color-accent: #7f6550; /* muted bronze — 5.4:1 on bg; keep off stone backgrounds */
+  /* Electric lime "pop" (user, 2026-10-08: a touch of the vibrant style, city pages). Only as a fill behind
+     --color-on-pop text, or as text/shapes on dark photos. Never as text on light backgrounds (1.2:1). */
+  --color-pop: #c6ff3d;
+  --color-on-pop: #111111; /* 17:1 on pop */
 
   --font-sans: 'Jost', 'Century Gothic', Futura, system-ui, sans-serif;
 

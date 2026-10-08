@@ -1,0 +1,171 @@
+---
+// About page "Our approach" band on warm grey: a statement whose words darken as it scrolls through
+// the viewport (a lime highlighter draws under the key word once it fills), then two numbered lists.
+
+// Approach text — edit here.
+const statement = { before: 'Every project starts with', key: 'listening' };
+const lists = [
+  { label: 'We listen to', items: ['The people who will use the space', 'The site', 'The budget'] },
+  { label: 'So the design is', items: ['Clear', 'Practical', 'Built to last'] },
+];
+
+const words = statement.before.split(' ');
+---
+
+<section class="approach section--surface" aria-labelledby="approach-heading">
+  <div class="container">
+    <h2 id="approach-heading" class="section-label approach__label">Our approach</h2>
+
+    <p class="approach__statement" data-approach-statement>
+      {
+        words.map((word) => (
+          <>
+            <span class="approach__word">{word}</span>{' '}
+          </>
+        ))
+      }
+      <span class="approach__word approach__key">{statement.key}</span>.
+    </p>
+
+    <div class="approach__lists">
+      {
+        lists.map((list) => (
+          <div class="approach__list" data-reveal>
+            <h3 class="approach__list-label">{list.label}</h3>
+            <ol>
+              {list.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ol>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  // Darkens the statement's words one by one as it moves from the bottom of the viewport to the middle.
+  const statement = document.querySelector<HTMLElement>('[data-approach-statement]');
+  if (statement && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const words = [...statement.querySelectorAll<HTMLElement>('.approach__word')];
+    statement.classList.add('is-scrubbed');
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const rect = statement.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const p = Math.min(1, Math.max(0, (vh * 0.9 - rect.top) / (vh * 0.5)));
+      const lit = Math.round(p * words.length);
+      words.forEach((word, i) => word.classList.toggle('is-lit', i < lit));
+    };
+    const queue = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    update();
+  }
+</script>
+
+<style>
+  .approach {
+    padding-block: var(--space-7);
+  }
+
+  .approach__label {
+    margin-bottom: var(--space-4);
+  }
+
+  .approach__statement {
+    max-width: 16em;
+    margin: 0 0 var(--space-6);
+    font-size: clamp(2.5rem, 6.4vw, 6rem);
+    font-weight: 300;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+  }
+
+  /* Scroll-scrubbed: unlit words are a mid grey (3.3:1 on warm grey, fine at this size). */
+  .approach__statement.is-scrubbed .approach__word {
+    color: var(--color-border-strong);
+    transition: color 400ms var(--ease);
+  }
+
+  .approach__statement.is-scrubbed .approach__word.is-lit {
+    color: var(--color-text);
+  }
+
+  /* Lime highlighter under the key word: drawn once it is lit (or straight away without the scrub). */
+  .approach__key {
+    background: linear-gradient(var(--color-pop), var(--color-pop)) 0 88% / 100% 0.3em no-repeat;
+  }
+
+  .approach__statement.is-scrubbed .approach__key {
+    background-size: 0% 0.3em;
+    transition:
+      color 400ms var(--ease),
+      background-size 900ms var(--ease) 150ms;
+  }
+
+  .approach__statement.is-scrubbed .approach__key.is-lit {
+    background-size: 100% 0.3em;
+  }
+
+  .approach__lists {
+    display: grid;
+    gap: var(--space-5) var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .approach__lists {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .approach__list:nth-child(2) {
+    --reveal-i: 1;
+  }
+
+  .approach__list-label {
+    margin: 0 0 var(--space-2);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .approach__list ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: item;
+    border-bottom: 1px solid var(--color-border-strong);
+  }
+
+  .approach__list li {
+    display: flex;
+    gap: var(--space-3);
+    align-items: baseline;
+    padding-block: var(--space-2);
+    border-top: 1px solid var(--color-border-strong);
+    font-size: clamp(1.375rem, 2.4vw, 2rem);
+    font-weight: 300;
+    line-height: 1.2;
+    counter-increment: item;
+  }
+
+  .approach__list li::before {
+    content: counter(item, decimal-leading-zero);
+    flex: none;
+    width: 2.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.1em;
+  }
+</style>
