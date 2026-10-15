@@ -161,7 +161,7 @@ const eyebrow = { about: 'About us', service: 'Service', city: 'Location', 'city
   }
 
   <section class:list={['section container', isCity ? 'city-intro' : isAbout ? '' : 'section--tight section--flush-top']}>
-    <div class:list={['prose', { 'prose--lede': isCity || isService || isAbout, 'prose--split': isService || isAbout }]} data-reveal>
+    <div class:list={['prose prose--split prose--rows', { 'prose--lede': isCity || isService || isAbout }]} data-reveal>
       <Content />
     </div>
   </section>
@@ -281,91 +281,6 @@ const eyebrow = { about: 'About us', service: 'Service', city: 'Location', 'city
   /* City pages: the opening paragraph becomes a large statement sentence. */
   .city-intro {
     padding-top: var(--space-6);
-  }
-
-  .prose--lede {
-    max-width: none;
-  }
-
-  .prose--lede > :global(*) {
-    max-width: 44rem;
-  }
-
-  .prose--lede > :global(p:first-child) {
-    max-width: 22em;
-    margin-bottom: var(--space-5);
-    font-size: clamp(1.625rem, 3.4vw, 3rem);
-    font-weight: 300;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-  }
-
-  /* Service pages: headings in a left column, their content on the right; lists become large numbered rows. */
-  @media (min-width: 60rem) {
-    .prose--split {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-      column-gap: var(--space-6);
-    }
-
-    .prose--split > :global(*) {
-      grid-column: 2;
-    }
-
-    .prose--split > :global(p:first-child) {
-      grid-column: 1 / -1;
-    }
-
-    .prose--split > :global(h2) {
-      grid-column: 1;
-      margin-top: 0;
-      padding-top: var(--space-3);
-    }
-  }
-
-  .prose--split > :global(h2) {
-    border-top: 1px solid var(--color-border);
-    color: var(--color-text-muted);
-    font-size: 1rem;
-    font-weight: 400;
-    letter-spacing: 0;
-  }
-
-  .prose--split > :global(h2 ~ *:not(h2)) {
-    margin-bottom: var(--space-6);
-  }
-
-  .prose--split > :global(ul) {
-    padding: 0;
-    list-style: none;
-    counter-reset: row;
-  }
-
-  .prose--split > :global(ul li) {
-    display: flex;
-    gap: var(--space-3);
-    align-items: baseline;
-    margin: 0;
-    padding-block: var(--space-2);
-    border-top: 1px solid var(--color-border);
-    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
-    font-weight: 300;
-    line-height: 1.25;
-    counter-increment: row;
-  }
-
-  .prose--split > :global(ul li:last-child) {
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .prose--split > :global(ul li::before) {
-    content: counter(row, decimal-leading-zero);
-    flex: none;
-    width: 2.5rem;
-    color: var(--color-text-muted);
-    font-size: 0.8125rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.1em;
   }
 
   /* About: the numbered "How we work" list becomes a four-step process. A dark line draws across the steps
