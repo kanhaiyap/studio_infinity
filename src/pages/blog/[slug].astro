@@ -1,0 +1,89 @@
+---
+// Renders a blog post from src/content/blog/.
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Headline from '../../components/Headline.astro';
+import LinkCards from '../../components/LinkCards.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { getPosts, type Post } from '../../lib/content';
+import { absoluteUrl } from '../../lib/url';
+import { site } from '../../site';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props as { post: Post };
+const { data } = post;
+const { Content } = await render(post);
+const path = `/blog/${post.id}/`;
+const lang = data.lang === 'hi' ? 'hi' : undefined;
+const date = data.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+const others = (await getPosts()).filter((p) => p.id !== post.id).slice(0, 3);
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: data.title,
+    description: data.description,
+    datePublished: data.date.toISOString().slice(0, 10),
+    inLanguage: data.lang === 'hi' ? 'hi-IN' : 'en-IN',
+    url: absoluteUrl(path, Astro.site),
+    author: { '@type': 'Organization', name: site.name },
+    publisher: { '@id': `${absoluteUrl('/', Astro.site)}#organization` },
+  },
+];
+---
+
+<Base
+  title={data.metaTitle}
+  description={data.description}
+  breadcrumbs={[
+    { name: 'Blog', path: '/blog/' },
+    { name: data.title, path },
+  ]}
+  schema={schema}
+>
+  <article lang={lang}>
+    <header class="section section--tight container page-intro">
+      <span class="eyebrow"><time datetime={data.date.toISOString().slice(0, 10)}>{date}</time></span>
+      <Headline text={data.title} class="page-title post-title" />
+      <p class="lead">{data.summary}</p>
+    </header>
+
+    <div class="section section--tight section--flush-top container">
+      <div class="prose" data-reveal>
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  {
+    others.length > 0 && (
+      <section class="section section--divided" aria-labelledby="more-heading">
+        <div class="container">
+          <h2 id="more-heading" class="section-label related-heading" data-reveal>
+            More from the blog
+          </h2>
+          <LinkCards items={others.map((p) => ({ title: p.data.title, href: `/blog/${p.id}/`, summary: p.data.summary }))} />
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand />
+</Base>
+
+<style>
+  /* Post titles are full sentences, so a smaller size than page titles keeps them to a few lines. */
+  :global(.post-title) {
+    max-width: 18em;
+    font-size: clamp(2.25rem, 5vw, 4.5rem);
+  }
+
+  .related-heading {
+    margin-bottom: var(--space-4);
+  }
+</style>

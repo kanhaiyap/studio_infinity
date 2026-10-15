@@ -2,6 +2,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Page = CollectionEntry<'pages'>;
 export type Project = CollectionEntry<'projects'>;
+export type Post = CollectionEntry<'blog'>;
 
 // SHOW_SAMPLES=true publishes drafts (the sample projects) for previews; see content.config.ts.
 const showDrafts = import.meta.env.DEV || process.env.SHOW_SAMPLES === 'true';
@@ -28,4 +29,10 @@ export async function getProjects(filter: { category?: string; city?: string; fe
 export async function getCoverPhoto(filter: { category?: string; city?: string }) {
   const project = (await getProjects(filter)).find((p) => p.data.cover);
   return project && { src: project.data.cover!, alt: project.data.coverAlt ?? '' };
+}
+
+// Blog posts, newest first. Drafts show while developing only.
+export async function getPosts() {
+  const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+  return posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }

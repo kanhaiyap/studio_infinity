@@ -7,7 +7,7 @@ import type { ImageMetadata } from 'astro';
 import Headline from './Headline.astro';
 
 interface Props {
-  title: string; // the page's h1, e.g. "Architect in Mumbai"
+  title: string; // the page's h1, e.g. "Architect in Jaipur"
   city: string;
   summary?: string;
   index: number; // 0-based position among the city pages
@@ -63,7 +63,7 @@ const coord = (value: number, pos: string, neg: string) => `${Math.abs(value).to
 </section>
 
 <script>
-  // Live local time (all four cities are on India Standard Time).
+  // Live local time (all our cities are on India Standard Time).
   const clock = document.querySelector<HTMLElement>('[data-local-time]');
   if (clock) {
     const time = clock.querySelector('time')!;

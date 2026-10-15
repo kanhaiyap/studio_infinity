@@ -5,7 +5,7 @@
 # delete them once real project photos are in.
 title: Sample Apartment Interior
 category: interior # residential | commercial | interior
-city: Bangalore
+city: Hyderabad
 # year: 2025
 cover: ./images/sample-apartment-interior-1.jpg
 coverAlt: Sample stock photo

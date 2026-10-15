@@ -5,7 +5,7 @@
 # delete them once real project photos are in.
 title: Sample Office
 category: commercial # residential | commercial | interior
-city: Delhi
+city: Ahmedabad
 # year: 2025
 cover: ./images/sample-office-1.jpg
 coverAlt: Sample stock photo

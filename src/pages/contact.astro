@@ -7,15 +7,16 @@ import { site } from '../site';
 
 // Contact page text — edit here. Contact details are set in src/site.ts.
 const meta = {
-  title: 'Contact Studio Infinity | Architects & Interior Designers',
+  title: 'Contact Studio Infinity | Architects in Jaipur',
   description:
-    'Get in touch with Studio Infinity to discuss your residential, commercial or interior design project in Mumbai, Delhi, Bangalore or Jaipur.',
+    'Contact Studio Infinity, architects and interior designers at 117, Heera Nagar, DCM, Ajmer Road, Jaipur. Call +91 97836 50470 to discuss your project.',
 };
 const intro = "Do you have a project? Tell us about the site, the brief and your timeline, and we'll get back to you.";
 const citiesHeading = 'Where we work';
 
 const { street, city, region, postalCode } = site.address;
 const addressLines = [street, [city, region, postalCode].filter(Boolean).join(', ')].filter(Boolean);
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([site.name, ...addressLines].join(', '))}`;
 
 // Each detail is a large row; empty details in src/site.ts are left out.
 const details = [
@@ -64,14 +65,35 @@ const hasDetails = details.length > 0 || addressLines.length > 0;
       addressLines.length > 0 && (
         <div class="contact-studio" data-reveal>
           <span class="contact-rows__label">Studio</span>
-          <address>
-            {addressLines.map((line) => (
-              <>
-                {line}
-                <br />
-              </>
+          <div>
+            <address>
+              {addressLines.map((line) => (
+                <>
+                  {line}
+                  <br />
+                </>
+              ))}
+            </address>
+            <a class="text-link contact-studio__map" href={mapsUrl} target="_blank" rel="noopener">
+              Get directions<span class="visually-hidden"> (opens Google Maps in a new tab)</span>
+            </a>
+          </div>
+        </div>
+      )
+    }
+    {
+      site.founders.length > 0 && (
+        <div class="contact-studio" data-reveal>
+          <span class="contact-rows__label">Principal architects</span>
+          <ul class="contact-founders">
+            {site.founders.map((f) => (
+              <li>
+                <span class="contact-founders__name">{f.name}</span>
+                <a href={`tel:${f.phone.replace(/\s/g, '')}`}>{f.phone}</a>
+                <a href={`mailto:${f.email}`}>{f.email}</a>
+              </li>
             ))}
-          </address>
+          </ul>
         </div>
       )
     }
@@ -199,6 +221,47 @@ const hasDetails = details.length > 0 || addressLines.length > 0;
       grid-template-columns: 12rem minmax(0, 1fr);
       align-items: baseline;
     }
+  }
+
+  .contact-studio__map {
+    display: inline-block;
+    margin-top: var(--space-2);
+  }
+
+  .contact-founders {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact-founders li {
+    display: grid;
+    gap: 0.35rem;
+    justify-items: start;
+  }
+
+  .contact-founders__name {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-weight: 300;
+    line-height: 1.35;
+  }
+
+  /* 44px tall tap targets without changing the look. */
+  .contact-founders a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .contact-founders a:hover {
+    color: var(--color-text);
   }
 
   .contact-cities__heading {

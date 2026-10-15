@@ -53,7 +53,18 @@ const organization = {
       addressCountry: site.address.country,
     },
   }),
-  areaServed: ['Mumbai', 'Delhi', 'Bangalore', 'Jaipur'].map((name) => ({ '@type': 'City', name })),
+  founder: site.founders.map(({ name, email, phone }) => ({
+    '@type': 'Person',
+    name: name.replace(/^Ar\. /, ''),
+    jobTitle: 'Architect',
+    email,
+    telephone: phone,
+  })),
+  knowsAbout: [...site.disciplines, 'Interior design', 'Heritage restoration'],
+  areaServed: [
+    ...['Jaipur', 'Ahmedabad', 'Pune', 'Surat', 'Hyderabad'].map((name) => ({ '@type': 'City', name })),
+    { '@type': 'State', name: 'Rajasthan' },
+  ],
   ...(sameAs.length && { sameAs }),
 };
 

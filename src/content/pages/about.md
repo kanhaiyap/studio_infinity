@@ -1,14 +1,25 @@
 ---
-# TODO: replace with the studio's real story, founders, team and approach.
+# TODO: add the studio's real story, the founders' backgrounds and the year it was founded.
 # The "Our approach" section's text lives in src/components/AboutApproach.astro.
 title: About Studio Infinity
-metaTitle: About Studio Infinity | Architecture & Interior Design Studio
-description: Studio Infinity is an architecture and interior design practice creating residential, commercial and interior spaces across Mumbai, Delhi, Bangalore and Jaipur.
+metaTitle: About Studio Infinity | Architecture Firm in Jaipur
+description: Studio Infinity is a Jaipur architecture firm led by Ar. Shivang Agarwal and Ar. Divya Gupta, working in architecture, interiors, furniture design and landscape.
 kind: about
-summary: An architecture and interior design practice working across residential, commercial and interior projects.
+summary: An architecture firm in Jaipur working across architecture, interiors, furniture design and landscape.
 ---
 
-Studio Infinity is an architecture and interior design practice. We design homes, workplaces and commercial spaces, and we carry each project from the first conversation through to completion on site.
+Studio Infinity is an architecture and interior design firm based in Jaipur. We design luxury homes, villas, farmhouses, hotels and workplaces, and we carry each project from the first conversation through to completion on site.
+
+## Principal architects
+
+The studio is led by **Ar. Shivang Agarwal** and **Ar. Divya Gupta**, who work on every project from the first site visit to handover.
+
+## What we do
+
+- **Architecture.** Homes, villas, farmhouses, hotels, resorts and commercial buildings.
+- **Interiors.** Complete interiors for homes, offices, restaurants and showrooms.
+- **Furniture design.** Custom furniture and joinery made for each space.
+- **Landscape.** Gardens, courtyards and outdoor spaces designed with the building.
 
 ## How we work
 

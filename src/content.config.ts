@@ -5,7 +5,7 @@ import { z } from 'astro/zod';
 const category = z.enum(['residential', 'commercial', 'interior']);
 
 // About, service and city pages. The file path is the page URL,
-// e.g. pages/architect-in-mumbai/villa-architect.md -> /architect-in-mumbai/villa-architect/
+// e.g. pages/architect-in-jaipur/villa-architect.md -> /architect-in-jaipur/villa-architect/
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: ({ image }) =>
@@ -46,4 +46,18 @@ const projects = defineCollection({
     }),
 });
 
-export const collections = { pages, projects };
+// Blog posts. The file name is the URL: blog/architect-fees-jaipur.md -> /blog/architect-fees-jaipur/
+const blog = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(), // H1 on the page
+    metaTitle: z.string(), // Google result title, ~50-60 characters
+    description: z.string(), // Google result snippet, ~140-160 characters
+    summary: z.string(), // one line on the blog list
+    date: z.coerce.date(), // published, e.g. 2026-10-14
+    lang: z.enum(['en', 'hi']).default('en'), // 'hi' for posts written in Hindi
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { pages, projects, blog };

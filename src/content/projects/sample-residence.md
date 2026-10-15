@@ -5,7 +5,7 @@
 # delete them once real project photos are in.
 title: Sample Residence
 category: residential # residential | commercial | interior
-city: Mumbai
+city: Pune
 # year: 2025
 cover: ./images/sample-residence-1.jpg
 coverAlt: Sample stock photo

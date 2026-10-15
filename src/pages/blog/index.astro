@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import WordHero from '../../components/WordHero.astro';
+import LinkCards from '../../components/LinkCards.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { getPosts } from '../../lib/content';
+
+// Blog page text — edit here. Posts are Markdown files in src/content/blog/.
+const meta = {
+  title: 'Blog | Architecture & Interior Design in Jaipur | Studio Infinity',
+  description:
+    'Notes from Studio Infinity, architects and interior designers in Jaipur: architect fees, house plans, farmhouse design and planning your home.',
+};
+const intro = 'Notes on planning, designing and building a home, from the architects at Studio Infinity.';
+
+const posts = await getPosts();
+---
+
+<Base title={meta.title} description={meta.description} breadcrumbs={[{ name: 'Blog', path: '/blog/' }]}>
+  <WordHero
+    word="blog"
+    label="Blog"
+    chip="Notes from the studio"
+    meta={[`${String(posts.length).padStart(2, '0')} post${posts.length === 1 ? '' : 's'}`]}
+    intro={intro}
+  />
+
+  <section class="section section--flush-top container" aria-label="Posts">
+    <LinkCards items={posts.map((p) => ({ title: p.data.title, href: `/blog/${p.id}/`, summary: p.data.summary }))} />
+  </section>
+
+  <CtaBand />
+</Base>

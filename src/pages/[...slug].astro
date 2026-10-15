@@ -60,7 +60,7 @@ const schema =
           provider: { '@id': `${absoluteUrl('/', Astro.site)}#organization` },
           areaServed: city
             ? { '@type': 'City', name: city }
-            : ['Mumbai', 'Delhi', 'Bangalore', 'Jaipur'].map((name) => ({ '@type': 'City', name })),
+            : ['Jaipur', 'Ahmedabad', 'Pune', 'Surat', 'Hyderabad'].map((name) => ({ '@type': 'City', name })),
         },
       ];
 

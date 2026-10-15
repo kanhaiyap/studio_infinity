@@ -1,22 +1,27 @@
 ---
-# TODO: add the studio's real commercial experience and project types.
+# TODO: add the studio's real commercial, hospitality and heritage experience and project types.
 title: Commercial Architecture
-metaTitle: Commercial Architects for Offices, Retail & Hospitality | Studio Infinity
-description: Commercial architecture by Studio Infinity — offices, retail and hospitality buildings designed to work well and represent your brand, in Mumbai, Delhi, Bangalore and Jaipur.
+metaTitle: Hotel, Resort & Commercial Architects | Studio Infinity
+description: Hotel, resort and commercial architects — boutique hotels, resorts, offices, showrooms and heritage restoration in Jaipur and across Rajasthan.
 kind: service
 category: commercial
 order: 2
-summary: Offices, retail and hospitality spaces designed to work hard and look right.
+summary: Hotels, resorts, offices and showrooms, plus heritage restoration and adaptive reuse.
 ---
 
-Commercial buildings have to work well every day and represent the business they house. We design offices, retail and hospitality projects that are efficient to run, comfortable to use and clear in their identity.
+Commercial buildings have to work well every day and represent the business they house. As hotel and resort architects, we design boutique hotels and resorts in Rajasthan and beyond, along with offices and retail spaces that are efficient to run, comfortable to use and clear in their identity.
 
 ## What we design
 
-- Office buildings and corporate campuses
+- Boutique hotels and resorts
+- Restaurants and cafes
+- Offices and workplaces
 - Retail and showrooms
-- Hospitality and resorts
 - Mixed-use developments
+
+## Heritage restoration
+
+As heritage restoration architects, we restore heritage properties and havelis across Rajasthan, and adapt old buildings to new uses as hotels, homes and workplaces while keeping their character.
 
 ## What's included
 
