@@ -3,7 +3,7 @@
 # contemporary home design. TODO: add real villa and farmhouse projects in and around Ahmedabad.
 title: Villa & Farmhouse Architect in Ahmedabad
 metaTitle: Villa Architect in Ahmedabad | Luxury Villas & Farmhouses
-description: Luxury villa and farmhouse architect in Ahmedabad. Studio Infinity designs contemporary villas, farmhouses and luxury homes in and around Ahmedabad.
+description: Luxury villa and farmhouse architect in Ahmedabad. Studio Infinite designs contemporary villas, farmhouses and luxury homes in and around Ahmedabad.
 kind: city-service
 category: residential
 order: 2

@@ -3,7 +3,7 @@
 # contemporary home design. TODO: add real villa and farmhouse projects in and around Pune.
 title: Villa & Farmhouse Architect in Pune
 metaTitle: Villa Architect in Pune | Luxury Villas & Farmhouses
-description: Luxury villa and farmhouse architect in Pune. Studio Infinity designs contemporary villas, farmhouses and luxury homes in and around Pune.
+description: Luxury villa and farmhouse architect in Pune. Studio Infinite designs contemporary villas, farmhouses and luxury homes in and around Pune.
 kind: city-service
 category: residential
 order: 2

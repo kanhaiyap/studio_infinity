@@ -3,7 +3,7 @@
 # Confirm the studio offers turnkey execution before keeping that line.
 title: Interior Design
 metaTitle: Luxury Interior Designers for Homes, Hotels & Offices
-description: Luxury interior design by Studio Infinity for villas, bungalows, apartments and penthouses, and for hotels, restaurants, cafes, offices and showrooms.
+description: Luxury interior design by Studio Infinite for villas, bungalows, apartments and penthouses, and for hotels, restaurants, cafes, offices and showrooms.
 kind: service
 category: interior
 order: 3

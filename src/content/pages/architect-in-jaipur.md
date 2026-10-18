@@ -4,7 +4,7 @@
 # TODO: add real Jaipur projects, approvals experience and anything specific to the studio.
 title: Architect in Jaipur
 metaTitle: Architect in Jaipur | Architecture Firm & Interior Designers
-description: Studio Infinity is an architecture and interior design firm in Jaipur designing luxury homes, villas, farmhouses, hotels and interiors, from concept to completion.
+description: Studio Infinite is an architecture and interior design firm in Jaipur designing luxury homes, villas, farmhouses, hotels and interiors, from concept to completion.
 kind: city
 city: Jaipur
 coordinates: [26.9124, 75.7873]
@@ -12,7 +12,7 @@ order: 1
 summary: Luxury homes, villas, farmhouses, hotels and interiors in Jaipur and across Rajasthan.
 ---
 
-Studio Infinity is an architecture firm in Jaipur, led by Ar. Shivang Agarwal and Ar. Divya Gupta. We work as architects and interior designers on luxury homes, villas and farmhouses for families, and on hotels, resorts and restaurants for businesses, across Jaipur and Rajasthan.
+Studio Infinite is an architecture firm in Jaipur, led by Ar. Shivang Agarwal and Ar. Divya Gupta. We work as architects and interior designers on luxury homes, villas and farmhouses for families, and on hotels, resorts and restaurants for businesses, across Jaipur and Rajasthan.
 
 ## Luxury homes, villas and farmhouses
 

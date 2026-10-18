@@ -2,7 +2,7 @@
 # TODO: add the studio's real residential experience, typical project sizes and examples.
 title: Residential Architecture
 metaTitle: Residential Architect for Luxury Homes, Villas & Farmhouses
-description: Residential architecture by Studio Infinity — luxury homes, villas, farmhouses and bungalows, from house plan to completion, in Jaipur and beyond.
+description: Residential architecture by Studio Infinite — luxury homes, villas, farmhouses and bungalows, from house plan to completion, in Jaipur and beyond.
 kind: service
 category: residential
 order: 1

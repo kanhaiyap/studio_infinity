@@ -3,7 +3,7 @@
 # contemporary home design. TODO: add real villa and farmhouse projects in and around Hyderabad.
 title: Villa & Farmhouse Architect in Hyderabad
 metaTitle: Villa Architect in Hyderabad | Luxury Villas & Farmhouses
-description: Luxury villa and farmhouse architect in Hyderabad. Studio Infinity designs contemporary villas, farmhouses and luxury homes in and around Hyderabad.
+description: Luxury villa and farmhouse architect in Hyderabad. Studio Infinite designs contemporary villas, farmhouses and luxury homes in and around Hyderabad.
 kind: city-service
 category: residential
 order: 2

@@ -4,7 +4,7 @@
 # TODO: add real Hyderabad interior projects. Confirm the studio offers turnkey execution before keeping that line.
 title: Interior Designer in Hyderabad
 metaTitle: Luxury Interior Designer in Hyderabad | Homes, Offices & Cafes
-description: Luxury interior designer in Hyderabad for villas, bungalows, flats and penthouses, plus offices, restaurants, cafes and showrooms. By Studio Infinity.
+description: Luxury interior designer in Hyderabad for villas, bungalows, flats and penthouses, plus offices, restaurants, cafes and showrooms. By Studio Infinite.
 kind: city-service
 category: interior
 order: 3

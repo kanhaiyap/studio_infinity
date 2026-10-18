@@ -3,7 +3,7 @@
 # interior designer in Ahmedabad. TODO: add real Ahmedabad projects, neighbourhoods served and approvals experience.
 title: Architect in Ahmedabad
 metaTitle: Architect in Ahmedabad | Architecture & Interior Design Firm
-description: Studio Infinity is an architecture and interior design firm working in Ahmedabad, designing luxury homes, villas, farmhouses, hotels and interiors.
+description: Studio Infinite is an architecture and interior design firm working in Ahmedabad, designing luxury homes, villas, farmhouses, hotels and interiors.
 kind: city
 city: Ahmedabad
 coordinates: [23.0225, 72.5714]
@@ -11,7 +11,7 @@ order: 2
 summary: Luxury homes, villas, farmhouses, hotels and interiors in Ahmedabad.
 ---
 
-Studio Infinity is an architecture and interior design firm working in Ahmedabad. We design luxury homes, villas, farmhouses and interiors for families, and hotels, restaurants and offices for businesses, across Ahmedabad and Gujarat.
+Studio Infinite is an architecture and interior design firm working in Ahmedabad. We design luxury homes, villas, farmhouses and interiors for families, and hotels, restaurants and offices for businesses, across Ahmedabad and Gujarat.
 
 ## Homes, villas and farmhouses
 

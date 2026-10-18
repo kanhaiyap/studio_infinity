@@ -3,7 +3,7 @@
 # contemporary home design. TODO: add real villa and farmhouse projects in and around Surat.
 title: Villa & Farmhouse Architect in Surat
 metaTitle: Villa Architect in Surat | Luxury Villas & Farmhouses
-description: Luxury villa and farmhouse architect in Surat. Studio Infinity designs contemporary villas, farmhouses and luxury homes in and around Surat.
+description: Luxury villa and farmhouse architect in Surat. Studio Infinite designs contemporary villas, farmhouses and luxury homes in and around Surat.
 kind: city-service
 category: residential
 order: 2

@@ -3,7 +3,7 @@
 # interior designer in Hyderabad. TODO: add real Hyderabad projects, neighbourhoods served and approvals experience.
 title: Architect in Hyderabad
 metaTitle: Architect in Hyderabad | Architecture & Interior Design Firm
-description: Studio Infinity is an architecture and interior design firm working in Hyderabad, designing luxury homes, villas, farmhouses, hotels and interiors.
+description: Studio Infinite is an architecture and interior design firm working in Hyderabad, designing luxury homes, villas, farmhouses, hotels and interiors.
 kind: city
 city: Hyderabad
 coordinates: [17.385, 78.4867]
@@ -11,7 +11,7 @@ order: 5
 summary: Luxury homes, villas, farmhouses, hotels and interiors in Hyderabad.
 ---
 
-Studio Infinity is an architecture and interior design firm working in Hyderabad. We design luxury homes, villas, farmhouses and interiors for families, and hotels, restaurants and offices for businesses, across Hyderabad and Telangana.
+Studio Infinite is an architecture and interior design firm working in Hyderabad. We design luxury homes, villas, farmhouses and interiors for families, and hotels, restaurants and offices for businesses, across Hyderabad and Telangana.
 
 ## Homes, villas and farmhouses
 

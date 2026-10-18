@@ -4,7 +4,7 @@
 # TODO: add real Pune interior projects. Confirm the studio offers turnkey execution before keeping that line.
 title: Interior Designer in Pune
 metaTitle: Luxury Interior Designer in Pune | Homes, Offices & Cafes
-description: Luxury interior designer in Pune for villas, bungalows, flats and penthouses, plus offices, restaurants, cafes and showrooms. By Studio Infinity.
+description: Luxury interior designer in Pune for villas, bungalows, flats and penthouses, plus offices, restaurants, cafes and showrooms. By Studio Infinite.
 kind: city-service
 category: interior
 order: 3

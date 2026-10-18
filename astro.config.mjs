@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 // SITE_URL and BASE_PATH are set by the GitHub Pages workflow.
-// When the site moves to its own domain, set SITE_URL to it (e.g. https://www.studioinfinity.in) and BASE_PATH to "/".
+// When the site moves to its own domain, set SITE_URL to it (e.g. https://www.studioinfinite.in) and BASE_PATH to "/".
 const site = process.env.SITE_URL || 'https://example.com';
 const base = process.env.BASE_PATH || '/';
 

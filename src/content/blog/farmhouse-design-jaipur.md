@@ -1,7 +1,7 @@
 ---
 # Keywords: farmhouse design Jaipur, farmhouse architect in Jaipur, farmhouse design and construction, फार्महाउस डिजाइन जयपुर.
 title: Planning a farmhouse near Jaipur
-metaTitle: Farmhouse Design in Jaipur | Planning Guide | Studio Infinity
+metaTitle: Farmhouse Design in Jaipur | Planning Guide | Studio Infinite
 description: Planning a farmhouse near Jaipur? A farmhouse architect's guide to the site, climate, layout, landscape and construction of a weekend home in Rajasthan.
 summary: "Site, climate, layout and landscape: what to think about before you build a farmhouse."
 date: 2026-10-14
@@ -29,4 +29,4 @@ Lawns, trees, a pool, paths and outdoor seating are what you will use most. Desi
 
 A farmhouse architect handles the site study, design, 3D views, working drawings and approvals, and stays involved through construction so the finished farmhouse matches the design.
 
-Studio Infinity designs farmhouses in and around Jaipur and across Rajasthan. See our [villa and farmhouse architecture](../../architect-in-jaipur/villa-architect/) work, or call +91 97836 50470.
+Studio Infinite designs farmhouses in and around Jaipur and across Rajasthan. See our [villa and farmhouse architecture](../../architect-in-jaipur/villa-architect/) work, or call +91 97836 50470.

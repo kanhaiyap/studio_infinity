@@ -3,7 +3,7 @@
 # contemporary home design. TODO: add real villa and farmhouse projects in and around Jaipur.
 title: Villa & Farmhouse Architect in Jaipur
 metaTitle: Villa Architect in Jaipur | Luxury Villas & Farmhouses
-description: Luxury villa and farmhouse architect in Jaipur. Studio Infinity designs contemporary villas, farmhouses and luxury homes across Jaipur and Rajasthan.
+description: Luxury villa and farmhouse architect in Jaipur. Studio Infinite designs contemporary villas, farmhouses and luxury homes across Jaipur and Rajasthan.
 kind: city-service
 category: residential
 order: 2

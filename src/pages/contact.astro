@@ -7,9 +7,9 @@ import { site } from '../site';
 
 // Contact page text — edit here. Contact details are set in src/site.ts.
 const meta = {
-  title: 'Contact Studio Infinity | Architects in Jaipur',
+  title: 'Contact Studio Infinite | Architects in Jaipur',
   description:
-    'Contact Studio Infinity, architects and interior designers at 117, Heera Nagar, DCM, Ajmer Road, Jaipur. Call +91 97836 50470 to discuss your project.',
+    'Contact Studio Infinite, architects and interior designers at 117, Heera Nagar, DCM, Ajmer Road, Jaipur. Call +91 97836 50470 to discuss your project.',
 };
 const intro = "Do you have a project? Tell us about the site, the brief and your timeline, and we'll get back to you.";
 const citiesHeading = 'Where we work';
@@ -35,7 +35,7 @@ const hasDetails = details.length > 0 || addressLines.length > 0;
   breadcrumbs={[{ name: 'Contact', path: '/contact/' }]}
   schema={[{ '@context': 'https://schema.org', '@type': 'ContactPage', name: meta.title, description: meta.description }]}
 >
-  <WordHero word="contact" label="Contact Studio Infinity" chip="Get in touch" meta={cities.map((c) => c.data.city ?? c.data.title.replace(/^Architect in /, ''))} intro={intro} />
+  <WordHero word="contact" label="Contact Studio Infinite" chip="Get in touch" meta={cities.map((c) => c.data.city ?? c.data.title.replace(/^Architect in /, ''))} intro={intro} />
 
   <section class="section section--flush-top container" aria-label="Contact details">
     {

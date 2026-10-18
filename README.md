@@ -1,4 +1,4 @@
-# Studio Infinity website
+# Studio Infinite website
 
 Built with [Astro](https://astro.build) 7. It needs Node 22.12+ (run `nvm use` in this folder to switch to the Node version in `.nvmrc`).
 

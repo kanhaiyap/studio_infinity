@@ -3,7 +3,7 @@
 # interior designer in Pune. TODO: add real Pune projects, neighbourhoods served and approvals experience.
 title: Architect in Pune
 metaTitle: Architect in Pune | Architecture & Interior Design Firm
-description: Studio Infinity is an architecture and interior design firm working in Pune, designing luxury homes, villas, farmhouses, hotels and interiors.
+description: Studio Infinite is an architecture and interior design firm working in Pune, designing luxury homes, villas, farmhouses, hotels and interiors.
 kind: city
 city: Pune
 coordinates: [18.5204, 73.8567]
@@ -11,7 +11,7 @@ order: 3
 summary: Luxury homes, villas, farmhouses, hotels and interiors in Pune.
 ---
 
-Studio Infinity is an architecture and interior design firm working in Pune. We design luxury homes, villas, farmhouses and interiors for families, and hotels, restaurants and offices for businesses, across Pune and Maharashtra.
+Studio Infinite is an architecture and interior design firm working in Pune. We design luxury homes, villas, farmhouses and interiors for families, and hotels, restaurants and offices for businesses, across Pune and Maharashtra.
 
 ## Homes, villas and farmhouses
 

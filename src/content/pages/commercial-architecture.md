@@ -1,7 +1,7 @@
 ---
 # TODO: add the studio's real commercial, hospitality and heritage experience and project types.
 title: Commercial Architecture
-metaTitle: Hotel, Resort & Commercial Architects | Studio Infinity
+metaTitle: Hotel, Resort & Commercial Architects | Studio Infinite
 description: Hotel, resort and commercial architects — boutique hotels, resorts, offices, showrooms and heritage restoration in Jaipur and across Rajasthan.
 kind: service
 category: commercial
