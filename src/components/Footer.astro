@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '../assets/logo-light.png';
-import { site } from '../site';
+import { nav, site } from '../site';
 import { url } from '../lib/url';
 import { getPages } from '../lib/content';
 
@@ -25,6 +25,19 @@ const hasContact = site.email || site.phone || site.whatsapp;
       </a>
       <p>{site.description}</p>
     </div>
+
+    <nav aria-label="Studio">
+      <h2>Studio</h2>
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={url(item.href)}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
 
     <nav aria-label="Services">
       <h2>Services</h2>
@@ -119,7 +132,7 @@ const hasContact = site.email || site.phone || site.whatsapp;
 
   @media (min-width: 40rem) {
     .site-footer__grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
     }
 
     .site-footer__brand {
@@ -129,7 +142,7 @@ const hasContact = site.email || site.phone || site.whatsapp;
 
   @media (min-width: 64rem) {
     .site-footer__grid {
-      grid-template-columns: 2fr 1fr 1fr 1fr;
+      grid-template-columns: 2fr repeat(4, 1fr);
     }
 
     .site-footer__brand {
