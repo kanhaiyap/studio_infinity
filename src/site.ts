@@ -37,6 +37,9 @@ export const nav = [
 
 export const projectCategories = {
   residential: 'Residential',
-  commercial: 'Commercial',
   interior: 'Interior',
+  commercial: 'Commercial',
+  hospitality: 'Hospitality',
+  institutional: 'Institutional',
+  exhibition: 'Exhibition',
 } as const;

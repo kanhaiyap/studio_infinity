@@ -2,7 +2,7 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-const category = z.enum(['residential', 'commercial', 'interior']);
+const category = z.enum(['residential', 'interior', 'commercial', 'hospitality', 'institutional', 'exhibition']);
 
 // About, service and city pages. The file path is the page URL,
 // e.g. pages/architect-in-jaipur/villa-architect.md -> /architect-in-jaipur/villa-architect/
