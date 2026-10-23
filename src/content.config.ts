@@ -39,6 +39,7 @@ const projects = defineCollection({
       year: z.number().optional(),
       cover: image().optional(),
       coverAlt: z.string().optional(),
+      coverPosition: z.string().optional(), // CSS object-position for cropped thumbnails, e.g. "left center"
       gallery: z.array(z.object({ src: image(), alt: z.string() })).default([]), // extra photos for the lightbox
       featured: z.boolean().default(false), // show on the home page
       order: z.number().default(0),

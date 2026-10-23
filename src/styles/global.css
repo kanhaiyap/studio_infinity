@@ -331,7 +331,13 @@ a {
   max-width: none;
 }
 
-.prose--split > * {
+/* A language wrapper (<div lang="hi"> around a Hindi section) takes part in the grid like the rest. */
+.prose--split > div[lang] {
+  display: contents;
+}
+
+.prose--split > *,
+.prose--split > div[lang] > * {
   max-width: 44rem;
 }
 
@@ -342,7 +348,8 @@ a {
     column-gap: var(--space-6);
   }
 
-  .prose--split > * {
+  .prose--split > *,
+  .prose--split > div[lang] > * {
     grid-column: 2;
   }
 
@@ -350,24 +357,43 @@ a {
     grid-column: 1 / -1;
   }
 
-  .prose--split > h2 {
+  .prose--split > h2,
+  .prose--split > div[lang] > h2 {
     grid-column: 1;
     margin-top: 0;
-    padding-top: var(--space-3);
   }
 }
 
-.prose--split > h2 {
+/* Section headings: a hairline and a mid-size heading, so they read as headings rather than captions. */
+.prose--split > h2,
+.prose--split > div[lang] > h2 {
+  padding-top: var(--space-2); /* var(--space-3) from 60rem, below */
   border-top: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0;
+  color: var(--color-text);
+  font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 /* Extra space only where one section ends and the next heading starts. */
-.prose--split > :not(h2):has(+ h2) {
-  margin-bottom: var(--space-6);
+.prose--split > :not(h2):has(+ h2, + div[lang]),
+.prose--split > div[lang] > :not(h2):has(+ h2) {
+  margin-bottom: var(--space-5);
+}
+
+/* Desktop: body copy next to a heading starts level with the heading's text. */
+@media (min-width: 60rem) {
+  .prose--split > h2,
+  .prose--split > div[lang] > h2 {
+    padding-top: var(--space-3);
+  }
+
+  .prose--split > h2 + p,
+  .prose--split > div[lang] > h2 + p {
+    margin-top: 0;
+    padding-top: calc(var(--space-3) + 0.2em);
+  }
 }
 
 .prose--rows > ul {

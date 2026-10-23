@@ -4,6 +4,7 @@ category: commercial
 city: Jaipur
 cover: ./images/service-pundit/03.jpg
 coverAlt: "Service Pundit showroom with a gabion stone facade and red-framed windows"
+coverPosition: "left center" # keeps the sign in portrait crops
 gallery:
   - src: ./images/service-pundit/01.jpg
     alt: "Service Pundit, photo 2 of 11"

@@ -154,8 +154,9 @@ const jsonLd = [organization, breadcrumbSchema, ...schema].filter(Boolean);
   .breadcrumbs ol {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.25rem 0.6rem;
-    margin: 0;
+    margin: -0.4rem 0; /* offsets the links' tap padding so the spacing stays as before */
     padding: 0;
     list-style: none;
   }
@@ -167,6 +168,8 @@ const jsonLd = [organization, breadcrumbSchema, ...schema].filter(Boolean);
   }
 
   .breadcrumbs a {
+    display: inline-block;
+    padding-block: 0.4rem; /* at least 24px tall to tap */
     text-decoration: none;
   }
 

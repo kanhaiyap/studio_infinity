@@ -137,8 +137,9 @@ const coord = (value: number, pos: string, neg: string) => `${Math.abs(value).to
       to bottom,
       rgb(0 0 0 / 0.5) 0%,
       rgb(0 0 0 / 0.12) 28%,
-      rgb(0 0 0 / 0.18) 50%,
-      rgb(0 0 0 / 0.68) 100%
+      rgb(0 0 0 / 0.24) 45%,
+      rgb(0 0 0 / 0.55) 70%,
+      rgb(0 0 0 / 0.72) 100%
     );
   }
 
@@ -229,7 +230,7 @@ const coord = (value: number, pos: string, neg: string) => `${Math.abs(value).to
 
   .city-hero :global(.city-hero__title) {
     margin: 0;
-    font-size: clamp(2rem, 4.2vw, 3.5rem);
+    font-size: clamp(2.25rem, 5vw, 4.5rem); /* stays larger than the statement below it */
   }
 
   /* The city word in the title: lime on the photo, a lime highlighter stroke on warm grey. */
@@ -249,13 +250,15 @@ const coord = (value: number, pos: string, neg: string) => `${Math.abs(value).to
   }
 
   .city-hero--photo .city-hero__lead {
-    color: rgb(255 255 255 / 0.85);
+    color: rgb(255 255 255 / 0.92);
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.45); /* stays legible over bright parts of the photo */
   }
 
   /* The city name: letters spread across the full width, like the logo's "infinite". */
   .city-hero__name {
     display: flex;
     justify-content: space-between;
+    max-width: calc(var(--len) * 0.8em + 2 * var(--gutter)); /* short words (blog, pune) stay together */
     margin: var(--space-3) 0 0;
     padding: 0 var(--gutter) calc(0.12em + clamp(0.5rem, 1.5vw, 1rem)); /* room for descenders (g, j, p) */
     font-size: min(calc(150vw / var(--len)), 34svh);

@@ -74,7 +74,7 @@ const hasDetails = details.length > 0 || addressLines.length > 0;
                 </>
               ))}
             </address>
-            <a class="text-link contact-studio__map" href={mapsUrl} target="_blank" rel="noopener">
+            <a class="button contact-studio__map" href={mapsUrl} target="_blank" rel="noopener">
               Get directions<span class="visually-hidden"> (opens Google Maps in a new tab)</span>
             </a>
           </div>
@@ -224,7 +224,7 @@ const hasDetails = details.length > 0 || addressLines.length > 0;
   }
 
   .contact-studio__map {
-    display: inline-block;
+    display: inline-flex;
     margin-top: var(--space-2);
   }
 

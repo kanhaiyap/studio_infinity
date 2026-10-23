@@ -31,6 +31,16 @@ export async function getCoverPhoto(filter: { category?: string; city?: string }
   return project && { src: project.data.cover!, alt: project.data.coverAlt ?? '' };
 }
 
+// Featured project photo picked by position, for pages with no project of their own (cities we have
+// no photos from yet), so each one gets a different photo instead of an empty hero.
+export async function getFallbackPhoto(index: number) {
+  const withCover = (await getProjects()).filter((p) => p.data.cover);
+  const featured = withCover.filter((p) => p.data.featured);
+  const pool = featured.length > index ? featured : withCover;
+  const project = pool[index % pool.length];
+  return project && { src: project.data.cover!, alt: project.data.coverAlt ?? project.data.title };
+}
+
 // Blog posts, newest first. Drafts show while developing only.
 export async function getPosts() {
   const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);

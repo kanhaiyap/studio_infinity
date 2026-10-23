@@ -23,7 +23,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <div class="service-hero__text">
     <p class="service-hero__meta">
       <span class="service-hero__index">Service {pad(index + 1)} / {pad(total)}</span>
-      <span>{cities.join(' · ')}</span>
+      {cities.map((city) => <span>{city}</span>)}
     </p>
     <Headline text={title} class="service-hero__title" />
     {summary && <p class="lead service-hero__lead">{summary}</p>}

@@ -71,6 +71,7 @@ const letters = [...word];
   .word-hero__letters {
     display: flex;
     justify-content: space-between;
+    max-width: calc(var(--len) * 0.8em + 2 * var(--gutter)); /* short words (blog, pune) stay together */
     padding-inline: var(--gutter);
   }
 

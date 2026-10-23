@@ -13,8 +13,8 @@ import ServiceHero from '../components/ServiceHero.astro';
 import AboutHero from '../components/AboutHero.astro';
 import PhotoBand from '../components/PhotoBand.astro';
 import AboutApproach from '../components/AboutApproach.astro';
-import { getCoverPhoto, getPages, getProjects, type Page } from '../lib/content';
-import { absoluteUrl } from '../lib/url';
+import { getCoverPhoto, getFallbackPhoto, getPages, getProjects, type Page } from '../lib/content';
+import { absoluteUrl, url } from '../lib/url';
 
 export async function getStaticPaths() {
   const pages = await getPages();
@@ -41,6 +41,9 @@ const breadcrumbs: Crumb[] = [
 // Related content
 const city = data.city ?? parent?.data.city;
 const projects = data.kind === 'about' ? [] : await getProjects({ category: data.category, city });
+// A short selection keeps the page's later sections (services, next page) within reach; the rest is on /projects/.
+const projectLimit = 8;
+const shownProjects = projects.slice(0, projectLimit);
 const children = allPages.filter((p) => p.id.startsWith(`${page.id}/`));
 const siblings = parent ? allPages.filter((p) => p.id.startsWith(`${parent.id}/`) && p.id !== page.id) : [];
 const services = data.kind === 'city' ? allPages.filter((p) => p.data.kind === 'service') : [];
@@ -73,7 +76,8 @@ const seriesIndex = series.findIndex((p) => p.id === page.id);
 const pagePhoto = async (p: Page) =>
   p.data.heroImage
     ? { src: p.data.heroImage, alt: p.data.heroAlt ?? '' }
-    : await getCoverPhoto(p.data.kind === 'city' ? { city: p.data.city } : { category: p.data.category });
+    : ((await getCoverPhoto(p.data.kind === 'city' ? { city: p.data.city } : { category: p.data.category })) ??
+      (await getFallbackPhoto(series.findIndex((s) => s.id === p.id))));
 const heroPhoto = series.length ? await pagePhoto(page) : undefined;
 const nextPage = series.length > 1 ? series[(seriesIndex + 1) % series.length] : undefined;
 const nextPhoto = nextPage ? await pagePhoto(nextPage) : undefined;
@@ -186,7 +190,14 @@ const eyebrow = { about: 'About us', service: 'Service', city: 'Location', 'city
           <h2 id="projects-heading" class="section-label related-heading" data-reveal>
             {city ? `Projects in ${city}` : 'Related projects'}
           </h2>
-          <ProjectGrid projects={projects} />
+          <ProjectGrid projects={shownProjects} />
+          {projects.length > projectLimit && (
+            <p class="all-projects" data-reveal>
+              <a class="button" href={url('/projects/') + (data.category ? `?category=${data.category}` : '')} data-magnetic>
+                See all projects
+              </a>
+            </p>
+          )}
         </div>
       </section>
     )
@@ -377,5 +388,11 @@ const eyebrow = { about: 'About us', service: 'Service', city: 'Location', 'city
 
   .related-heading {
     margin-bottom: var(--space-4);
+  }
+
+  .all-projects {
+    display: flex;
+    justify-content: flex-end;
+    margin: var(--space-5) 0 0;
   }
 </style>

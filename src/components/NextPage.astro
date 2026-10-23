@@ -147,6 +147,7 @@ const letters = [...word.toLowerCase()];
   .next-page__name {
     display: flex;
     justify-content: space-between;
+    max-width: calc(var(--len) * 1em + 2 * var(--gutter)); /* short words (pune, surat) stay together */
     padding: var(--space-3) var(--gutter) var(--space-4);
     font-size: min(calc(120vw / var(--len)), 14rem);
     font-weight: 500;

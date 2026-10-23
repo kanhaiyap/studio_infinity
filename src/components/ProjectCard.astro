@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { project, index = 0, eager = false } = Astro.props;
-const { title, category, city, year, cover, coverAlt, gallery } = project.data;
+const { title, category, city, year, cover, coverAlt, coverPosition, gallery } = project.data;
 const categoryLabel = projectCategories[category];
 const alt = coverAlt ?? `${title}, ${categoryLabel.toLowerCase()} project in ${city}`;
 
@@ -34,6 +34,7 @@ const slides = await Promise.all(
           widths={[400, 700, 1000, 1400]}
           sizes="(min-width: 48rem) 60vw, 100vw"
           loading={eager ? 'eager' : 'lazy'}
+          style={coverPosition && `object-position: ${coverPosition}`}
         />
       ) : (
         <div class="project-card__placeholder" aria-hidden="true">
